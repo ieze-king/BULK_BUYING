@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fbf9f5;
+  --surface: #ffffff;
+  --foreground: #1a1714;
+  --muted: #6b635a;
+  --border: #e6e0d6;
+  --accent: #0f7a4f;
+  --accent-contrast: #ffffff;
+  --accent-soft: #e8f4ed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #14120f;
+    --surface: #1e1b17;
+    --foreground: #f4f1ec;
+    --muted: #a49a8d;
+    --border: #322d26;
+    --accent: #3bbd82;
+    --accent-contrast: #0b1a12;
+    --accent-soft: #1b2f24;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-accent-soft: var(--accent-soft);
+  --font-sans: var(--font-geist-sans);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Stops iOS/Android in-app browsers zooming when a field is focused. */
+input,
+select,
+textarea {
+  font-size: 16px;
+}

@@ -1,0 +1,35 @@
+import type { Metadata, Viewport } from "next";
+import { Geist } from "next/font/google";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Buy in bulk, together",
+  description:
+    "Tell us what you want to buy in bulk and how much. When enough people want the same thing near you, we negotiate bulk prices together.",
+  openGraph: {
+    title: "Buy in bulk, together",
+    description:
+      "Tell us what you want to buy in bulk. When enough people near you want the same thing, we get bulk prices together.",
+    type: "website",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0f7a4f",
+};
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return (
+    <html lang="en" className={`${geistSans.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col font-sans">{children}</body>
+    </html>
+  );
+}
