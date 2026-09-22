@@ -1,19 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
+import { Figtree, Fraunces } from "next/font/google";
 import "./globals.css";
 
-/* Display face with real character; body face tuned for small Android screens. */
-const display = Bricolage_Grotesque({
+/* A warm, crafted serif for display; a friendly geometric sans for reading. */
+const display = Fraunces({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["600", "700", "900"],
   display: "swap",
 });
 
-const body = Instrument_Sans({
+const body = Figtree({
   variable: "--font-body",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0b7a48",
+  themeColor: "#0b8a4b",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -28,6 +28,12 @@ export default async function Home() {
     .orderBy(asc(products.name));
 
   const categories = CATEGORY_ORDER.filter((c) => rows.some((r) => r.category === c));
+
+  // A spread across categories rather than the first N alphabetically, so the
+  // ticker shows the real breadth of the catalogue.
+  const marqueeNames = categories.flatMap((c) =>
+    rows.filter((r) => r.category === c).slice(0, 4).map((r) => r.name),
+  );
   const { byProduct, totalPeople } = await getInterestCounts();
 
   return (
@@ -35,7 +41,12 @@ export default async function Home() {
       products={rows}
       categories={categories}
       interestByProduct={byProduct}
-      intro={<Landing totalPeople={totalPeople >= MIN_TOTAL_TO_SHOW ? totalPeople : 0} />}
+      intro={
+        <Landing
+          totalPeople={totalPeople >= MIN_TOTAL_TO_SHOW ? totalPeople : 0}
+          marquee={marqueeNames}
+        />
+      }
     />
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { ProductCard, type Product } from "@/components/product-card";
 import { MissingProduct } from "@/components/missing-product";
+import { categoryHue, categoryTint } from "@/lib/category-style";
 import { unitPhrase } from "@/lib/format";
 import { MAX_QUANTITY } from "@/lib/validation";
 
@@ -204,26 +205,29 @@ export function DemandBuilder({
         {intro}
 
         <div id="pick" className="mx-auto max-w-6xl scroll-mt-16 px-4">
-          <section className="border-t border-border pt-12 pb-7">
-            <h2 className="font-display max-w-2xl text-[1.75rem] font-bold leading-tight text-balance sm:text-4xl">
+          <section className="pt-4 pb-8">
+            <h2 className="font-display max-w-3xl text-[2rem] font-black leading-[1.05] text-balance sm:text-5xl">
               What do you want to buy in bulk?
             </h2>
-            <p className="mt-3 max-w-xl leading-relaxed text-muted">
+            <p className="mt-3 max-w-xl text-lg leading-relaxed">
               Select what you need and how much. Nothing is ordered and nothing is
               owed. We are finding out what people want.
             </p>
           </section>
 
           {hydrated && returning && itemCount > 0 && (
-            <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-accent bg-accent-soft px-4 py-3">
-              <p className="text-sm">
-                <strong className="font-semibold">Welcome back.</strong> You have{" "}
-                {itemCount} item{itemCount === 1 ? "" : "s"} on your list.
+            <div
+              className="pop mb-8 flex items-center justify-between gap-3 rounded-2xl px-5 py-4"
+              style={{ background: "var(--marigold)" }}
+            >
+              <p>
+                <strong className="font-display text-lg font-black">Welcome back.</strong>{" "}
+                You have {itemCount} item{itemCount === 1 ? "" : "s"} on your list.
               </p>
               <button
                 type="button"
                 onClick={() => setListOpen(true)}
-                className="shrink-0 text-sm font-medium text-accent underline underline-offset-4"
+                className="shrink-0 font-bold underline underline-offset-4"
               >
                 View
               </button>
@@ -238,7 +242,7 @@ export function DemandBuilder({
             <div className="relative">
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg"
               >
                 &#128269;
               </span>
@@ -253,13 +257,13 @@ export function DemandBuilder({
                   setSuggestOpen(e.target.value.trim().length > 0);
                 }}
                 onFocus={() => setSuggestOpen(query.trim().length > 0)}
-                className="h-14 w-full rounded-xl border border-border bg-surface pl-11 pr-4 text-base outline-none placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/25"
-                style={{ boxShadow: "var(--shadow)" }}
+                className="h-16 w-full rounded-2xl border-2 border-foreground bg-surface pl-12 pr-4 text-lg font-medium outline-none placeholder:font-normal placeholder:text-muted focus:ring-4 focus:ring-marigold/50"
+                style={{ boxShadow: "var(--shadow-pop)" }}
               />
             </div>
 
             {suggestOpen && suggestions.length > 0 && (
-              <ul className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-xl border border-border bg-surface shadow-lg">
+              <ul className="pop absolute inset-x-0 top-full z-20 mt-3 overflow-hidden rounded-2xl bg-surface">
                 {suggestions.map((p) => {
                   const qty = quantities[p.id] ?? 0;
                   return (
@@ -292,7 +296,7 @@ export function DemandBuilder({
               {/* A–Z */}
               <div className="mb-5">
                 <div className="mb-2 flex items-baseline justify-between gap-3">
-                  <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">
+                  <h2 className="font-display text-sm font-black uppercase tracking-wider">
                     Browse by letter
                   </h2>
                   {grouping === "alpha" && !searching && (
@@ -314,9 +318,9 @@ export function DemandBuilder({
                         type="button"
                         disabled={!enabled}
                         onClick={() => jumpToLetter(letter)}
-                        className={`size-9 shrink-0 rounded-lg text-sm font-medium transition-colors ${
+                        className={`size-9 shrink-0 rounded-xl text-sm font-bold transition-all ${
                           enabled
-                            ? "text-foreground hover:bg-accent-soft hover:text-accent"
+                            ? "border-2 border-foreground/15 bg-surface hover:-translate-y-0.5 hover:border-foreground hover:bg-marigold"
                             : "cursor-default text-muted/35"
                         }`}
                       >
@@ -329,7 +333,7 @@ export function DemandBuilder({
 
               {/* Categories */}
               <div className="mb-6">
-                <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
+                <h2 className="font-display mb-2.5 text-sm font-black uppercase tracking-wider">
                   Categories
                 </h2>
                 <div className="flex flex-wrap gap-2">
@@ -345,11 +349,16 @@ export function DemandBuilder({
                           setGrouping("category");
                           setActiveCategory(active ? null : category);
                         }}
-                        className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
-                          active
-                            ? "border-accent bg-accent text-accent-contrast"
-                            : "border-border bg-surface hover:border-border-strong"
-                        }`}
+                        className="rounded-full border-2 px-4 py-2 text-sm font-bold transition-transform hover:-translate-y-0.5"
+                        style={{
+                          borderColor: active
+                            ? "var(--foreground)"
+                            : "color-mix(in oklab, var(--foreground) 15%, transparent)",
+                          background: active
+                            ? categoryHue(category)
+                            : categoryTint(category, 16),
+                          boxShadow: active ? "3px 3px 0 0 var(--foreground)" : undefined,
+                        }}
                       >
                         {category}
                       </button>
@@ -365,7 +374,7 @@ export function DemandBuilder({
                         .getElementById("missing-product")
                         ?.scrollIntoView({ behavior: "smooth", block: "center" });
                     }}
-                    className="rounded-full border border-dashed border-border-strong px-3.5 py-1.5 text-sm font-medium text-muted hover:text-foreground"
+                    className="rounded-full border-2 border-dashed border-foreground/35 px-4 py-2 text-sm font-bold text-muted transition-transform hover:-translate-y-0.5 hover:text-foreground"
                   >
                     Other
                   </button>
@@ -375,7 +384,7 @@ export function DemandBuilder({
               {/* Products */}
               {groups.length === 0 ? (
                 <div className="space-y-4">
-                  <p className="rounded-xl border border-border bg-surface px-4 py-6 text-center text-muted">
+                  <p className="rounded-2xl border-2 border-dashed border-foreground/25 px-4 py-8 text-center text-lg font-medium">
                     Nothing matches &ldquo;{query}&rdquo;.
                   </p>
                   <MissingProduct
@@ -388,7 +397,12 @@ export function DemandBuilder({
                 <div className="space-y-7">
                   {groups.map((group) => (
                     <section key={group.key} id={group.key} className="scroll-mt-20">
-                      <h3 className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted">
+                      <h3 className="font-display mb-3 flex items-center gap-2.5 text-lg font-black">
+                        <span
+                          aria-hidden="true"
+                          className="size-3.5 rounded-md border-2 border-foreground"
+                          style={{ background: categoryHue(group.label) }}
+                        />
                         {group.label}
                       </h3>
                       <ul className="space-y-2">
@@ -414,11 +428,8 @@ export function DemandBuilder({
 
             {/* Desktop list */}
             <aside className="sticky top-20 hidden lg:block">
-              <div
-                className="rounded-xl border border-border bg-surface p-4"
-                style={{ boxShadow: "var(--shadow)" }}
-              >
-                <h2 className="font-semibold">My List</h2>
+              <div className="pop rounded-3xl bg-surface p-5">
+                <h2 className="font-display text-xl font-black">My List</h2>
                 {itemCount === 0 ? (
                   <p className="mt-2 text-sm text-muted">
                     Nothing yet. Add what you want to buy in bulk and it will collect
@@ -450,7 +461,7 @@ export function DemandBuilder({
                       type="button"
                       onClick={goToList}
                       disabled={saving}
-                      className="mt-4 h-11 w-full rounded-xl bg-accent font-semibold text-accent-contrast hover:bg-accent-hover disabled:opacity-60"
+                      className="mt-5 h-12 w-full rounded-2xl border-2 border-foreground bg-accent font-bold text-accent-contrast transition-transform hover:-translate-y-0.5 disabled:opacity-60"
                     >
                       {saving ? "Saving…" : "Continue"}
                     </button>
@@ -465,8 +476,8 @@ export function DemandBuilder({
       {/* Mobile sticky bar */}
       {hydrated && itemCount > 0 && (
         <div
-          className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur lg:hidden"
-          style={{ boxShadow: "var(--shadow-lifted)" }}
+          className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-foreground bg-surface px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden"
+          style={{ boxShadow: "var(--shadow-soft)" }}
         >
           <div className="mx-auto flex max-w-6xl items-center gap-3">
             <button
@@ -474,16 +485,18 @@ export function DemandBuilder({
               onClick={() => setListOpen(true)}
               className="min-w-0 flex-1 text-left"
             >
-              <span className="block font-medium">
+              <span className="font-display block text-lg font-black">
                 My list &middot; {itemCount} item{itemCount === 1 ? "" : "s"}
               </span>
-              <span className="block text-sm text-accent">View list &rarr;</span>
+              <span className="block text-sm font-bold" style={{ color: "var(--coral)" }}>
+                View list &rarr;
+              </span>
             </button>
             <button
               type="button"
               onClick={goToList}
               disabled={saving}
-              className="h-12 shrink-0 rounded-xl bg-accent px-6 font-semibold text-accent-contrast disabled:opacity-60 active:scale-95"
+              className="pop h-12 shrink-0 rounded-2xl bg-accent px-6 font-bold text-accent-contrast disabled:opacity-60 active:scale-95"
             >
               {saving ? "Saving…" : "Continue"}
             </button>
@@ -504,10 +517,10 @@ export function DemandBuilder({
             role="dialog"
             aria-modal="true"
             aria-label="My list"
-            className="absolute inset-x-0 bottom-0 max-h-[80vh] overflow-y-auto rounded-t-2xl border-t border-border bg-surface p-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
+            className="absolute inset-x-0 bottom-0 max-h-[80vh] overflow-y-auto rounded-t-3xl border-t-2 border-foreground bg-surface p-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
           >
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">My list</h2>
+              <h2 className="font-display text-2xl font-black">My list</h2>
               <button
                 type="button"
                 onClick={() => setListOpen(false)}
@@ -530,7 +543,7 @@ export function DemandBuilder({
               type="button"
               onClick={goToList}
               disabled={saving}
-              className="mt-4 h-12 w-full rounded-xl bg-accent font-semibold text-accent-contrast disabled:opacity-60"
+              className="pop mt-5 h-12 w-full rounded-2xl bg-accent font-bold text-accent-contrast disabled:opacity-60"
             >
               {saving ? "Saving…" : "Continue"}
             </button>

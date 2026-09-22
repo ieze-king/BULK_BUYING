@@ -45,12 +45,11 @@ export function MissingProduct({
   if (sent) {
     return (
       <div
-        className={`rounded-xl border px-4 py-4 text-sm ${
-          prominent ? "border-accent bg-accent-soft" : "border-border bg-surface"
-        }`}
+        className="pop rounded-2xl px-5 py-4"
+        style={{ background: "var(--accent)", color: "var(--accent-contrast)" }}
       >
-        <strong className="font-medium">Thank you, noted.</strong>{" "}
-        <span className="text-muted">
+        <strong className="font-display text-lg font-black">Thank you, noted.</strong>{" "}
+        <span className="opacity-90">
           We add what people ask for most, so this genuinely counts.
         </span>
       </div>
@@ -59,11 +58,14 @@ export function MissingProduct({
 
   return (
     <div
-      className={`rounded-xl border px-4 py-4 ${
-        prominent ? "border-accent bg-accent-soft" : "border-dashed border-border-strong"
+      className={`rounded-2xl px-5 py-5 ${
+        prominent
+          ? "pop"
+          : "border-2 border-dashed border-foreground/25"
       }`}
+      style={prominent ? { background: "var(--marigold)" } : undefined}
     >
-      <label htmlFor="missing-input" className="block text-sm font-medium">
+      <label htmlFor="missing-input" className="font-display block text-lg font-black">
         {prominent
           ? "We don’t have that yet. What are you looking for?"
           : "Can’t find what you want to buy?"}
@@ -84,13 +86,13 @@ export function MissingProduct({
           }}
           maxLength={300}
           placeholder="e.g. groundnut, cartons, generator"
-          className="h-11 flex-1 rounded-lg border border-border bg-surface px-3 outline-none focus:border-accent focus:ring-2 focus:ring-accent/25"
+          className="h-12 flex-1 rounded-xl border-2 border-foreground bg-surface px-3.5 font-medium outline-none focus:ring-4 focus:ring-accent/35"
         />
         <button
           type="button"
           onClick={() => void submit()}
           disabled={sending || text.trim().length < 2}
-          className="h-11 shrink-0 rounded-lg bg-accent px-5 text-sm font-semibold text-accent-contrast disabled:opacity-50"
+          className="h-12 shrink-0 rounded-xl border-2 border-foreground bg-accent px-6 font-bold text-accent-contrast transition-transform hover:-translate-y-0.5 disabled:opacity-50"
         >
           {sending ? "Sending…" : "Tell us"}
         </button>

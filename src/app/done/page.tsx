@@ -52,27 +52,27 @@ export default async function DonePage() {
       <SiteHeader />
       <main className="flex-1 px-4 pb-16">
         <div className="mx-auto max-w-2xl pt-12">
-          <div className="grid size-11 place-items-center rounded-full bg-accent text-lg text-accent-contrast">
+          <div
+            className="grid size-14 place-items-center rounded-2xl border-2 border-foreground text-2xl text-accent-contrast"
+            style={{ background: "var(--accent)", boxShadow: "4px 4px 0 0 var(--marigold)" }}
+          >
             &#10003;
           </div>
-          <h1 className="font-display mt-5 text-2xl font-bold sm:text-3xl">
+          <h1 className="font-display mt-6 text-3xl font-black sm:text-5xl">
             Your demand has been recorded
           </h1>
           <p className="mt-2 text-muted">We&rsquo;ve saved your list.</p>
 
           {items.length > 0 && (
-            <section
-              className="mt-7 rounded-xl border border-border bg-surface p-4 sm:p-5"
-              style={{ boxShadow: "var(--shadow)" }}
-            >
-              <h2 className="mb-3 font-semibold">Your selected items</h2>
+            <section className="pop mt-8 rounded-3xl bg-surface p-5 sm:p-6">
+              <h2 className="font-display mb-4 text-xl font-black">Your selected items</h2>
               <ul className="divide-y divide-border">
                 {items.map((item) => (
                   <li key={item.id} className="flex justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
                     <span className="min-w-0">
                       <span className="block">{item.name}</span>
                       {byProduct[item.productId] ? (
-                        <span className="block text-sm text-accent">
+                        <span className="block text-sm font-bold" style={{ color: "var(--coral)" }}>
                           {peoplePhrase(byProduct[item.productId])} want this
                         </span>
                       ) : null}
@@ -105,7 +105,7 @@ export default async function DonePage() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/"
-              className="inline-flex h-12 flex-1 items-center justify-center rounded-xl bg-accent px-6 font-semibold text-accent-contrast hover:bg-accent-hover"
+              className="pop inline-flex flex-1 items-center justify-center rounded-2xl bg-accent px-6 py-3.5 font-bold text-accent-contrast transition-transform hover:-translate-y-1"
             >
               Update my list
             </Link>
@@ -113,7 +113,8 @@ export default async function DonePage() {
               href="https://wa.me/?text=I%20just%20added%20what%20I%20want%20to%20buy%20in%20bulk.%20When%20enough%20of%20us%20want%20the%20same%20thing%20we%20get%20bulk%20prices%20together%20%E2%80%94%20add%20yours%3A%20"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-12 flex-1 items-center justify-center rounded-xl border border-border-strong px-6 font-medium hover:bg-surface-raised"
+              className="pop inline-flex flex-1 items-center justify-center rounded-2xl px-6 py-3.5 font-bold transition-transform hover:-translate-y-1"
+              style={{ background: "var(--marigold)" }}
             >
               Share on WhatsApp
             </a>

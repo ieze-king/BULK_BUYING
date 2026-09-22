@@ -23,7 +23,7 @@ const WHO = [
 ];
 
 const inputClass =
-  "w-full h-12 px-3.5 rounded-xl border border-border bg-surface outline-none focus:border-accent focus:ring-2 focus:ring-accent/25";
+  "w-full h-13 py-3 px-3.5 rounded-xl border-2 border-foreground/25 bg-surface font-medium outline-none focus:border-foreground focus:ring-4 focus:ring-marigold/40";
 
 function Field({
   label,
@@ -40,7 +40,7 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="mb-1.5 block font-medium">
+      <label htmlFor={htmlFor} className="mb-1.5 block font-bold">
         {label}
       </label>
       {children}
@@ -62,11 +62,8 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section
-      className="rounded-xl border border-border bg-surface p-4 sm:p-5"
-      style={{ boxShadow: "var(--shadow)" }}
-    >
-      <h2 className="mb-4 font-semibold">{title}</h2>
+    <section className="pop rounded-3xl bg-surface p-5 sm:p-6">
+      <h2 className="font-display mb-5 text-xl font-black">{title}</h2>
       {children}
     </section>
   );
@@ -151,16 +148,18 @@ export function ListForm({
                   type="button"
                   onClick={() => changeQuantity(item.productId, item.quantity - 1)}
                   aria-label={`Reduce ${item.name}`}
-                  className="size-9 rounded-lg border border-border-strong text-lg leading-none active:scale-95"
+                  className="size-10 rounded-xl border-2 border-foreground/25 text-lg leading-none active:scale-95"
                 >
                   &minus;
                 </button>
-                <span className="w-8 text-center tabular-nums">{item.quantity}</span>
+                <span className="font-display w-9 text-center text-lg font-black tabular-nums">
+                  {item.quantity}
+                </span>
                 <button
                   type="button"
                   onClick={() => changeQuantity(item.productId, item.quantity + 1)}
                   aria-label={`Add one more ${item.name}`}
-                  className="size-9 rounded-lg bg-accent text-lg leading-none text-accent-contrast active:scale-95"
+                  className="size-10 rounded-xl border-2 border-foreground bg-accent text-lg font-bold leading-none text-accent-contrast active:scale-95"
                 >
                   +
                 </button>
@@ -222,7 +221,7 @@ export function ListForm({
           {WHO.map((option) => (
             <label
               key={option.value}
-              className="flex cursor-pointer items-start gap-3 rounded-xl border border-border p-3 transition-colors has-checked:border-accent has-checked:bg-accent-soft"
+              className="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-foreground/15 p-3.5 transition-all hover:-translate-y-0.5 has-checked:border-foreground has-checked:bg-marigold"
             >
               <input
                 type="radio"
@@ -270,7 +269,7 @@ export function ListForm({
           ].map((opt) => (
             <label
               key={opt.value}
-              className="flex cursor-pointer items-start gap-3 rounded-xl border border-border p-3 transition-colors has-checked:border-accent has-checked:bg-accent-soft"
+              className="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-foreground/15 p-3.5 transition-all hover:-translate-y-0.5 has-checked:border-foreground has-checked:bg-marigold"
             >
               <input
                 type="radio"
@@ -334,7 +333,7 @@ export function ListForm({
               id="productRequest"
               name="productRequest"
               rows={2}
-              className="w-full rounded-xl border border-border bg-surface p-3.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/25"
+              className="w-full rounded-xl border-2 border-foreground/25 bg-surface p-3.5 font-medium outline-none focus:border-foreground focus:ring-4 focus:ring-marigold/40"
             />
           </Field>
 
@@ -368,7 +367,7 @@ export function ListForm({
       <button
         type="submit"
         disabled={pending || syncing}
-        className="h-13 w-full rounded-xl bg-accent py-3.5 font-semibold text-accent-contrast hover:bg-accent-hover disabled:opacity-60 active:scale-[0.99]"
+        className="pop w-full rounded-2xl bg-accent py-4 text-lg font-bold text-accent-contrast transition-transform hover:-translate-y-1 disabled:opacity-60 active:scale-[0.99]"
       >
         {pending ? "Saving…" : "Save my list"}
       </button>

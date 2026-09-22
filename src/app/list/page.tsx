@@ -50,7 +50,7 @@ export default async function ListPage() {
             </p>
             <Link
               href="/"
-              className="mt-6 inline-flex h-12 items-center rounded-xl bg-accent px-6 font-semibold text-accent-contrast"
+              className="pop mt-6 inline-flex items-center rounded-2xl bg-accent px-7 py-3.5 font-bold text-accent-contrast"
             >
               Browse products
             </Link>
@@ -84,10 +84,10 @@ export default async function ListPage() {
             <Link href="/" className="text-sm text-muted underline underline-offset-4">
               &larr; Add more items
             </Link>
-            <h1 className="font-display mt-4 text-2xl font-bold sm:text-3xl">
+            <h1 className="font-display mt-4 text-3xl font-black sm:text-5xl">
               Your bulk-buying list
             </h1>
-            <p className="mt-2 text-muted">
+            <p className="mt-2 text-lg">
               Check the quantities, tell us where you are, and we will save it.
             </p>
           </div>
