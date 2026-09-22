@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { submitDemand, type SubmitState } from "@/app/actions";
-import { naira, unitPhrase } from "@/lib/format";
+import { unitPhrase } from "@/lib/format";
 import { LAGOS_CODE } from "@/lib/naija";
 import { MAX_QUANTITY } from "@/lib/validation";
 
@@ -11,7 +11,6 @@ type Item = {
   productId: number;
   quantity: number;
   unitLabel: string;
-  indicativePriceNgn: number | null;
   name: string;
   category: string;
 };
@@ -90,11 +89,6 @@ export function ListForm({
   const [stateCode, setStateCode] = useState("");
   const [syncing, setSyncing] = useState(false);
   const errors = state.errors ?? {};
-
-  const estimate = items.reduce(
-    (sum, i) => sum + (i.indicativePriceNgn ?? 0) * i.quantity,
-    0,
-  );
 
   /**
    * Quantity edits here write through immediately rather than on a debounce:
@@ -251,50 +245,52 @@ export function ListForm({
       </Section>
 
       {/*
-        The commitment question. Quantities alone are wishes; the yes-rate here
-        is what turns this pilot into something you can take to a supplier.
-        The figure is labelled as a market estimate, never as our offer.
+        The interest question. Quantities alone are wishes; the share of people
+        who say they are ready to buy is what turns this pilot into something
+        worth taking to a supplier. No price is shown, because we do not have
+        real quotes and an invented figure would bias the answer.
       */}
-      <section className="rounded-xl border-2 border-accent bg-accent-soft p-4 sm:p-5">
-        <h2 className="font-semibold">Would you actually buy?</h2>
-        {estimate > 0 && (
-          <p className="mt-2 text-sm text-muted">
-            Indicative current market price for your list:{" "}
-            <strong className="font-semibold text-foreground">{naira(estimate)}</strong>
-            <span className="block">
-              This is an estimate of what these items cost today, not our price.
-            </span>
-          </p>
-        )}
-        <p className="mt-3 text-sm leading-relaxed">
-          If we gather enough people and negotiate a bulk price below that, would you
-          go ahead and buy?
+      <Section title="How interested are you?">
+        <p className="-mt-2 mb-4 text-sm text-muted">
+          We will only come back to you once we have gathered enough people and
+          negotiated an actual bulk price for these items.
         </p>
-        <div className="mt-3 grid grid-cols-2 gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           {[
-            { value: "yes", label: "Yes, contact me" },
-            { value: "no", label: "Just curious" },
+            {
+              value: "ready",
+              label: "Ready to buy",
+              hint: "Contact me when there is a bulk price",
+            },
+            {
+              value: "exploring",
+              label: "Just exploring",
+              hint: "I am interested but not committed",
+            },
           ].map((opt) => (
             <label
               key={opt.value}
-              className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-surface font-medium has-checked:border-accent has-checked:bg-accent has-checked:text-accent-contrast"
+              className="flex cursor-pointer items-start gap-3 rounded-xl border border-border p-3 transition-colors has-checked:border-accent has-checked:bg-accent-soft"
             >
               <input
                 type="radio"
-                name="wouldBuyAtPrice"
+                name="interested"
                 value={opt.value}
-                className="sr-only"
+                className="mt-1 size-4 shrink-0 accent-[var(--accent)]"
               />
-              {opt.label}
+              <span className="min-w-0">
+                <span className="block font-medium">{opt.label}</span>
+                <span className="block text-sm text-muted">{opt.hint}</span>
+              </span>
             </label>
           ))}
         </div>
-        {errors.wouldBuyAtPrice && (
-          <p role="alert" className="mt-2 text-sm text-red-700 dark:text-red-400">
-            {errors.wouldBuyAtPrice}
+        {errors.interested && (
+          <p role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400">
+            {errors.interested}
           </p>
         )}
-      </section>
+      </Section>
 
       <Section title="Save your list">
         <p className="-mt-2 mb-4 text-sm text-muted">

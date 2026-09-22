@@ -11,7 +11,7 @@ export type ProductDemand = {
   unit_label: string;
   total_quantity: number;
   buyers: number;
-  committed_quantity: number;
+  interested_quantity: number;
 };
 
 export async function productDemand() {
@@ -20,8 +20,8 @@ export async function productDemand() {
            p.unit_label,
            SUM(i.quantity)::int AS total_quantity,
            COUNT(DISTINCT l.id)::int AS buyers,
-           COALESCE(SUM(i.quantity) FILTER (WHERE l.would_buy_at_price), 0)::int
-             AS committed_quantity
+           COALESCE(SUM(i.quantity) FILTER (WHERE l.interested), 0)::int
+             AS interested_quantity
     FROM demand_list_items i
     JOIN demand_lists l ON l.id = i.list_id
     JOIN products p ON p.id = i.product_id
@@ -40,7 +40,7 @@ export type Pool = {
   buyers: number;
 };
 
-/** The point of the whole exercise: "142 bags of rice in Ikeja". */
+/** The point of the whole exercise: "142 bags of rice wanted in Ikeja". */
 export async function moqPools() {
   const { rows } = await db.execute<Pool>(sql`
     SELECT COALESCE(g.name, l.area, s.name) AS place,
@@ -53,7 +53,7 @@ export async function moqPools() {
     JOIN products p ON p.id = i.product_id
     LEFT JOIN lgas g ON g.id = l.lga_id
     LEFT JOIN states s ON s.code = l.state_code
-    WHERE l.status = 'submitted' AND l.superseded_at IS NULL AND l.would_buy_at_price
+    WHERE l.status = 'submitted' AND l.superseded_at IS NULL AND l.interested
     GROUP BY place, p.id, p.name, p.unit_label
     HAVING COUNT(DISTINCT l.id) > 1
     ORDER BY total_quantity DESC
@@ -83,7 +83,7 @@ export type Funnel = {
   added_item: number;
   reached_submit: number;
   submitted: number;
-  committed: number;
+  interested: number;
 };
 
 export async function funnel() {
@@ -94,19 +94,19 @@ export async function funnel() {
       (SELECT COUNT(DISTINCT list_id) FROM events WHERE type = 'reached_submit')::int
         AS reached_submit,
       COUNT(*) FILTER (WHERE status = 'submitted' AND superseded_at IS NULL)::int AS submitted,
-      COUNT(*) FILTER (WHERE would_buy_at_price AND superseded_at IS NULL)::int AS committed
+      COUNT(*) FILTER (WHERE interested AND superseded_at IS NULL)::int AS interested
     FROM demand_lists
   `);
   return rows[0];
 }
 
-export type Segment = { participant_type: string; lists: number; committed: number };
+export type Segment = { participant_type: string; lists: number; interested: number };
 
 export async function bySegment() {
   const { rows } = await db.execute<Segment>(sql`
     SELECT participant_type,
            COUNT(*)::int AS lists,
-           COUNT(*) FILTER (WHERE would_buy_at_price)::int AS committed
+           COUNT(*) FILTER (WHERE interested)::int AS interested
     FROM demand_lists
     WHERE status = 'submitted' AND superseded_at IS NULL AND participant_type IS NOT NULL
     GROUP BY participant_type

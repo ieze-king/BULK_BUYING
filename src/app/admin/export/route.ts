@@ -33,11 +33,10 @@ export async function GET() {
            s.name AS state,
            g.name AS lga,
            l.area,
-           l.would_buy_at_price,
+           l.interested,
            p.name AS product,
            i.quantity,
-           i.unit_label,
-           i.indicative_price_ngn
+           i.unit_label
     FROM demand_lists l
     JOIN demand_list_items i ON i.list_id = l.id
     JOIN products p ON p.id = i.product_id

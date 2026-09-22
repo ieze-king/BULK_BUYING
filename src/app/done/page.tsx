@@ -3,7 +3,8 @@ import { and, asc, desc, eq, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { demandListItems, demandLists, products } from "@/db/schema";
 import { getAnonId } from "@/lib/session";
-import { unitPhrase } from "@/lib/format";
+import { peoplePhrase, unitPhrase } from "@/lib/format";
+import { getInterestCounts } from "@/lib/interest";
 import { SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";
@@ -32,6 +33,7 @@ export default async function DonePage() {
     ? await db
         .select({
           id: demandListItems.id,
+          productId: demandListItems.productId,
           quantity: demandListItems.quantity,
           unitLabel: demandListItems.unitLabel,
           name: products.name,
@@ -41,6 +43,9 @@ export default async function DonePage() {
         .where(eq(demandListItems.listId, list.id))
         .orderBy(asc(products.sortOrder))
     : [];
+
+  // Social proof, to make the share button below feel worth pressing.
+  const { byProduct } = await getInterestCounts();
 
   return (
     <>
@@ -64,7 +69,14 @@ export default async function DonePage() {
               <ul className="divide-y divide-border">
                 {items.map((item) => (
                   <li key={item.id} className="flex justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
-                    <span>{item.name}</span>
+                    <span className="min-w-0">
+                      <span className="block">{item.name}</span>
+                      {byProduct[item.productId] ? (
+                        <span className="block text-sm text-accent">
+                          {peoplePhrase(byProduct[item.productId])} want this
+                        </span>
+                      ) : null}
+                    </span>
                     <span className="shrink-0 text-muted tabular-nums">
                       {unitPhrase(item.quantity, item.unitLabel)}
                     </span>

@@ -1,5 +1,6 @@
-export function naira(value: number) {
-  return `₦${value.toLocaleString("en-NG")}`;
+/** "12 people" / "1 person" — the social-proof line on a product card. */
+export function peoplePhrase(count: number) {
+  return `${count} ${count === 1 ? "person" : "people"}`;
 }
 
 /** "bag" + 2 -> "2 bags". Units here are all regular plurals. */

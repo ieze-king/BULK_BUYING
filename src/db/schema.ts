@@ -18,8 +18,8 @@ export const products = pgTable("products", {
   category: text("category").notNull(),
   /** The unit people buy in: "bag", "carton", "crate". Shown next to the stepper. */
   unitLabel: text("unit_label").notNull(),
-  /** Indicative bulk price per unit, in naira. Drives the commitment question.
-   *  Never shown while browsing — only on the submit screen, clearly labelled. */
+  /** Reserved for real supplier quotes. Empty in the pilot: we do not have
+   *  prices, and showing an invented one would bias the demand we measure. */
   indicativePriceNgn: integer("indicative_price_ngn"),
   /** Extra words people actually search for: "indomie", "coke", "parboiled". */
   aliases: text("aliases").notNull().default(""),
@@ -73,10 +73,11 @@ export const demandLists = pgTable(
     area: text("area"),
 
     /**
-     * The commitment question. Null until asked; the yes-rate over submitted
-     * lists is the headline number this pilot exists to produce.
+     * Interest level. Null until asked. The share of submitted lists marked
+     * ready to buy is the headline number this pilot exists to produce: it is
+     * what separates a wish list from demand worth taking to a supplier.
      */
-    wouldBuyAtPrice: boolean("would_buy_at_price"),
+    interested: boolean("interested"),
 
     consentedAt: timestamp("consented_at", { withTimezone: true }),
 

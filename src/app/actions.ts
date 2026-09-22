@@ -56,7 +56,7 @@ export async function submitDemand(
       stateCode: d.stateCode,
       lgaId: d.lgaId ?? null,
       area: d.area || null,
-      wouldBuyAtPrice: d.wouldBuyAtPrice === "yes",
+      interested: d.interested === "ready",
       consentedAt: new Date(),
       submittedAt: new Date(),
       updatedAt: new Date(),
@@ -85,7 +85,7 @@ export async function submitDemand(
     anonId,
     listId: list.id,
     type: "submitted",
-    payload: { wouldBuy: d.wouldBuyAtPrice === "yes", state: d.stateCode },
+    payload: { interested: d.interested === "ready", state: d.stateCode },
   });
 
   revalidatePath("/admin");

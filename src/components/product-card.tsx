@@ -1,7 +1,7 @@
 "use client";
 
 import { MAX_QUANTITY } from "@/lib/validation";
-import { unitPhrase } from "@/lib/format";
+import { peoplePhrase, unitPhrase } from "@/lib/format";
 
 export type Product = {
   id: number;
@@ -20,10 +20,13 @@ export type Product = {
 export function ProductCard({
   product,
   quantity,
+  interestedCount,
   onChange,
 }: {
   product: Product;
   quantity: number;
+  /** Omitted until enough people have asked for it to be worth showing. */
+  interestedCount?: number;
   onChange: (productId: number, quantity: number) => void;
 }) {
   const selected = quantity > 0;
@@ -43,7 +46,17 @@ export function ProductCard({
               &#10003; {unitPhrase(quantity, product.unitLabel)} added
             </p>
           ) : (
-            <p className="mt-0.5 text-sm text-muted">{product.category}</p>
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-sm text-muted">
+              <span>{product.category}</span>
+              {interestedCount ? (
+                <>
+                  <span aria-hidden="true">&middot;</span>
+                  <span className="font-medium text-accent">
+                    {peoplePhrase(interestedCount)} want this
+                  </span>
+                </>
+              ) : null}
+            </p>
           )}
         </div>
 

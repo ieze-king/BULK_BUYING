@@ -72,8 +72,8 @@ export default async function AdminPage() {
     catalogueGaps(),
   ]);
 
-  const commitRate =
-    f.submitted > 0 ? `${Math.round((100 * f.committed) / f.submitted)}%` : "—";
+  const interestRate =
+    f.submitted > 0 ? `${Math.round((100 * f.interested) / f.submitted)}%` : "—";
   const completion =
     f.added_item > 0 ? `${Math.round((100 * f.submitted) / f.added_item)}%` : "—";
 
@@ -89,9 +89,9 @@ export default async function AdminPage() {
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Stat label="Lists submitted" value={String(f.submitted)} />
         <Stat
-          label="Would buy at price"
-          value={commitRate}
-          sub={`${f.committed} of ${f.submitted}`}
+          label="Ready to buy"
+          value={interestRate}
+          sub={`${f.interested} of ${f.submitted}`}
         />
         <Stat
           label="Started → submitted"
@@ -104,10 +104,11 @@ export default async function AdminPage() {
       <section>
         <h2 className="font-medium mb-3">Bulk pools worth chasing</h2>
         <p className="text-sm text-muted mb-3">
-          Committed demand only, grouped by place and item, two or more buyers.
+          People who said they are ready to buy, grouped by place and item, two or
+          more of them.
         </p>
         <Table
-          headers={["Place", "Item", "Quantity", "Buyers"]}
+          headers={["Place", "Item", "Quantity", "People"]}
           rows={pools.map((p) => [
             p.place ?? "Unknown",
             p.name,
@@ -120,11 +121,11 @@ export default async function AdminPage() {
       <section>
         <h2 className="font-medium mb-3">Demand by product</h2>
         <Table
-          headers={["Item", "Requested", "Committed", "Buyers"]}
+          headers={["Item", "Requested", "Ready to buy", "People"]}
           rows={demand.map((d) => [
             d.name,
             `${d.total_quantity} ${d.unit_label}s`,
-            `${d.committed_quantity} ${d.unit_label}s`,
+            `${d.interested_quantity} ${d.unit_label}s`,
             d.buyers,
           ])}
         />
@@ -142,8 +143,8 @@ export default async function AdminPage() {
         <section>
           <h2 className="font-medium mb-3">Who is asking</h2>
           <Table
-            headers={["Type", "Lists", "Would buy"]}
-            rows={segments.map((s) => [s.participant_type, s.lists, s.committed])}
+            headers={["Type", "Lists", "Ready to buy"]}
+            rows={segments.map((s) => [s.participant_type, s.lists, s.interested])}
           />
         </section>
       </div>

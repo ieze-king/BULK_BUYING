@@ -29,7 +29,6 @@ export default async function ListPage() {
           productId: demandListItems.productId,
           quantity: demandListItems.quantity,
           unitLabel: demandListItems.unitLabel,
-          indicativePriceNgn: demandListItems.indicativePriceNgn,
           name: products.name,
           category: products.category,
         })

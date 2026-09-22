@@ -3,12 +3,14 @@ import { db } from "@/db";
 import { products } from "@/db/schema";
 import { CATEGORY_ORDER } from "@/lib/catalog";
 import { DemandBuilder } from "@/components/demand-builder";
+import { getInterestCounts, MIN_TOTAL_TO_SHOW } from "@/lib/interest";
 
 /**
- * Cached: the catalogue changes rarely, and the first paint of the page people
- * reach from a WhatsApp link must not wait on a sleeping database.
+ * Cached for five minutes: long enough that the first paint of a link opened
+ * from WhatsApp never waits on a sleeping database, short enough that the
+ * interest counts stay roughly current.
  */
-export const revalidate = 3600;
+export const revalidate = 300;
 
 export default async function Home() {
   const rows = await db
@@ -25,6 +27,14 @@ export default async function Home() {
     .orderBy(asc(products.sortOrder), asc(products.name));
 
   const categories = CATEGORY_ORDER.filter((c) => rows.some((r) => r.category === c));
+  const { byProduct, totalPeople } = await getInterestCounts();
 
-  return <DemandBuilder products={rows} categories={categories} />;
+  return (
+    <DemandBuilder
+      products={rows}
+      categories={categories}
+      interestByProduct={byProduct}
+      totalPeople={totalPeople >= MIN_TOTAL_TO_SHOW ? totalPeople : 0}
+    />
+  );
 }

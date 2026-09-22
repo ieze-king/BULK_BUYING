@@ -64,7 +64,6 @@ export async function POST(request: Request) {
         productId: i.productId,
         quantity: i.quantity,
         unitLabel: product.unitLabel,
-        indicativePriceNgn: product.indicativePriceNgn,
       };
     });
 

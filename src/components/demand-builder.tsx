@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { ProductCard, type Product } from "@/components/product-card";
-import { unitPhrase } from "@/lib/format";
+import { peoplePhrase, unitPhrase } from "@/lib/format";
 import { MAX_QUANTITY } from "@/lib/validation";
 
 const STORAGE_KEY = "bb_selection_v1";
@@ -30,9 +30,14 @@ function matches(product: Product, query: string) {
 export function DemandBuilder({
   products,
   categories,
+  interestByProduct,
+  totalPeople,
 }: {
   products: Product[];
   categories: string[];
+  interestByProduct: Record<number, number>;
+  /** Suppressed below a threshold: an early low number discourages people. */
+  totalPeople: number;
 }) {
   const router = useRouter();
 
@@ -204,6 +209,15 @@ export function DemandBuilder({
               Select what you need and how much. We&rsquo;ll combine demand from people
               and businesses to unlock bulk purchasing opportunities.
             </p>
+            {totalPeople > 0 && (
+              <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm">
+                <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
+                <span>
+                  <strong className="font-semibold">{peoplePhrase(totalPeople)}</strong>{" "}
+                  have shared what they want to buy in bulk
+                </span>
+              </p>
+            )}
           </section>
 
           {hydrated && returning && itemCount > 0 && (
@@ -383,6 +397,7 @@ export function DemandBuilder({
                             key={product.id}
                             product={product}
                             quantity={quantities[product.id] ?? 0}
+                            interestedCount={interestByProduct[product.id]}
                             onChange={setQuantity}
                           />
                         ))}

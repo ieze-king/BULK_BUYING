@@ -38,7 +38,9 @@ export const submitSchema = z.object({
   stateCode: z.string().trim().min(2, "Please choose your state"),
   lgaId: emptyToUndefined(z.coerce.number().int().positive()),
   area: emptyToUndefined(z.string().trim().max(120)),
-  wouldBuyAtPrice: z.enum(["yes", "no"], { message: "Please answer the last question" }),
+  interested: z.enum(["ready", "exploring"], {
+    message: "Please tell us how interested you are",
+  }),
   consent: z.literal("on", { message: "Please accept so we can contact you" }),
   productRequest: emptyToUndefined(z.string().trim().max(300)),
   // The honeypot field is checked in the action, before validation runs.
