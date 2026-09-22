@@ -37,24 +37,45 @@ npm run db:seed                # states, Lagos LGAs, catalogue
 npm run dev
 ```
 
-- `/`, landing explainer, then search, A–Z and categories; pick items and quantities
-- `/list`, review the list, location, who you are buying for, interest, save
-- `/done`, confirmation
-- `/admin`, password-protected demand overview and CSV export
+- `/`, the bubble field: every live pool, sized by demand
+- `/start`, start a pool (or join the existing one for that item and place)
+- `/pool/[slug]`, a pool: size, who is in, share, join
+- `/admin`, password-protected pool overview and CSV export
 
-## The landing page
+```bash
+npm run db:demo            # fill the field with demo pools, local only
+npm run db:demo -- clear   # remove them
+```
 
-Someone arriving from a WhatsApp link has no idea what this is, so `/` answers four
-things before asking for anything: what it is, how it works, whether it is for them,
-and what it will cost. The picker sits directly below, reachable from the hero CTA.
+## Pools
 
-The one illustration earns its place: it shows a demand pool filling toward a
-supplier's minimum, which is the mechanism nobody guesses from a product list. It is
-static example data and is labelled **Example** so it is never read as live numbers.
+A pool is a public, shareable group order. Someone starts one, others join with their
+own quantity, and the page shows how big it has grown.
 
-Typography is Bricolage Grotesque for display and Instrument Sans for body, both
-self-hosted through `next/font` so there are no external font requests on a cold
-mobile connection.
+**A pool is canonically `(product, state, LGA or area)`.** Starting one that already
+exists joins it instead. That makes catalogue fragmentation impossible by construction:
+there can only ever be one rice-in-Ikeja pool, so it always sums. Joining twice updates
+your quantity rather than double counting.
+
+**Pools carry no target.** We do not know any supplier's real minimum order, so a goal
+would be an invented number doing load-bearing work. The story is momentum instead:
+total quantity, people in, ready to buy, joined this week.
+
+Bubbles scale by the square root of quantity, so area rather than diameter tracks
+demand. Everything the size conveys is also written inside the bubble, so sizing
+decorates text rather than carrying meaning on its own.
+
+The pool page shows members by role, never by name or number.
+
+### The empty field
+
+A new site whose homepage says "nothing here" reads as dead, and the one thing we must
+not do instead is fabricate demand. So a thin field is filled with **starter bubbles**:
+dashed outlines for popular items that carry no quantity and say "Be the first". They
+are invitations, and tapping one opens the start flow with that item already chosen.
+
+`npm run db:demo` exists for looking at a populated interface locally. Never run it
+against production: fabricated pools are fake social proof.
 
 ## The interest question
 

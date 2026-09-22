@@ -2,6 +2,7 @@ import { randomBytes } from "crypto";
 import { and, desc, eq, gte, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { lgas, people, poolMembers, pools, products, states } from "@/db/schema";
+import { STARTER_SLUGS } from "@/lib/catalog";
 
 /** Short, unguessable, readable aloud over the phone. */
 export function makeSlug() {
@@ -10,6 +11,7 @@ export function makeSlug() {
 
 export type PoolSummary = {
   slug: string;
+  product_id: number;
   product: string;
   unit_label: string;
   category: string;
@@ -23,6 +25,7 @@ export type PoolSummary = {
 
 const SUMMARY_SELECT = sql`
   SELECT pl.slug,
+         pl.product_id,
          p.name AS product,
          p.unit_label,
          p.category,
@@ -139,6 +142,39 @@ export async function joinPool(poolId: number, personId: number, quantity: numbe
       target: [poolMembers.poolId, poolMembers.personId],
       set: { quantity, interested, updatedAt: new Date() },
     });
+}
+
+export type Starter = {
+  productId: number;
+  product: string;
+  unit_label: string;
+  category: string;
+};
+
+/**
+ * Fills a thin field with invitations rather than leaving it empty. A brand
+ * new site whose homepage says "nothing here" reads as dead, and the one thing
+ * we must not do instead is invent demand, so a starter carries no quantity
+ * and says plainly that nobody has joined yet.
+ */
+export async function suggestedStarters(
+  excludeProductIds: number[],
+  limit: number,
+): Promise<Starter[]> {
+  if (limit <= 0) return [];
+  const { rows } = await db.execute<Starter>(sql`
+    SELECT p.id AS "productId", p.name AS product, p.unit_label, p.category
+    FROM products p
+    JOIN unnest(${sql.raw(`ARRAY[${STARTER_SLUGS.map((x) => `'${x}'`).join(",")}]::text[]`)})
+      WITH ORDINALITY AS starter(slug, ord) ON starter.slug = p.slug
+    WHERE p.active
+      AND (${excludeProductIds.length} = 0 OR p.id <> ALL(${sql.raw(
+        `ARRAY[${excludeProductIds.length ? excludeProductIds.join(",") : "NULL"}]::int[]`,
+      )}))
+    ORDER BY starter.ord
+    LIMIT ${limit}
+  `);
+  return rows;
 }
 
 export async function getOrCreatePerson(anonId: string) {

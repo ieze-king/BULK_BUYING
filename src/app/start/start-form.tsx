@@ -21,18 +21,23 @@ export function StartForm({
   categories,
   states,
   lagosLgas,
+  preselectId,
 }: {
   products: Item[];
   categories: string[];
   states: { code: string; name: string }[];
   lagosLgas: { id: number; name: string }[];
+  /** Set when arriving from a starter bubble, so step one is already done. */
+  preselectId?: number | null;
 }) {
   const [state, formAction, pending] = useActionState<PoolFormState, FormData>(
     startPool,
     {},
   );
   const [query, setQuery] = useState("");
-  const [picked, setPicked] = useState<Item | null>(null);
+  const [picked, setPicked] = useState<Item | null>(
+    () => products.find((p) => p.id === preselectId) ?? null,
+  );
   const [category, setCategory] = useState<string | null>(null);
   const [quantity, setQuantity] = useState("");
   const [stateCode, setStateCode] = useState("");

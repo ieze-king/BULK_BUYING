@@ -7,9 +7,11 @@ import { LAGOS_CODE } from "@/lib/naija";
 import { SiteHeader } from "@/components/site-header";
 import { StartForm } from "./start-form";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
-export default async function StartPage() {
+export default async function StartPage({ searchParams }: PageProps<"/start">) {
+  const sp = await searchParams;
+  const preselect = Number(sp.product) || null;
   const [items, allStates, lagosLgas] = await Promise.all([
     db
       .select({
@@ -54,6 +56,7 @@ export default async function StartPage() {
             categories={categories}
             states={allStates}
             lagosLgas={lagosLgas}
+            preselectId={preselect}
           />
         </div>
       </main>

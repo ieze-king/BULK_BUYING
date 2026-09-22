@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@/db";
 import { SiteHeader } from "@/components/site-header";
 import { PoolField } from "@/components/pool-field";
-import { listPools } from "@/lib/pools";
+import { listPools, suggestedStarters } from "@/lib/pools";
 import { peoplePhrase } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +17,13 @@ export default async function Home() {
     `),
   ]);
   const { people = 0, pools: poolCount = 0 } = totals.rows[0] ?? {};
+
+  // Keep the field looking alive while it is still thin, with invitations
+  // rather than invented demand.
+  const starters = await suggestedStarters(
+    pools.map((p) => p.product_id),
+    Math.max(0, 10 - pools.length),
+  );
 
   return (
     <>
@@ -87,7 +94,7 @@ export default async function Home() {
               </p>
             </div>
 
-            <PoolField pools={pools} />
+            <PoolField pools={pools} starters={starters} />
 
             {pools.length > 0 && (
               <div className="mt-12 text-center">

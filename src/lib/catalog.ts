@@ -149,3 +149,21 @@ export const CATEGORY_ORDER = [
   "Personal Care",
   "Building Materials",
 ];
+
+/**
+ * Items offered as starter bubbles when the field is thin. These are
+ * invitations to start a pool, never fabricated demand: a starter bubble
+ * shows "be the first" and no quantity, because there is nothing there yet.
+ */
+export const STARTER_SLUGS = [
+  "rice-50kg",
+  "cement",
+  "cooking-oil-25l",
+  "minerals",
+  "noodles",
+  "tomato-paste",
+  "frozen-chicken",
+  "detergent",
+  "sugar-50kg",
+  "beans-50kg",
+];
