@@ -116,12 +116,11 @@ saying nothing. Thresholds are `MIN_TO_SHOW` (3 per product) and `MIN_TOTAL_TO_S
 
 The browse page is cached for five minutes, so these counts lag by up to that long.
 
-## Repeat submissions
+## Repeat participation
 
-People are invited to come back and update their list. When someone submits again,
-their earlier submission is marked `superseded_at`, matched on device cookie or phone
-number, so an update replaces the old figure instead of doubling it. Every analytics
-query and the CSV export exclude superseded rows.
+People are invited to come back and change what they want. Joining a pool you are
+already in updates your quantity rather than adding a second membership, so demand
+cannot be double counted.
 
 ## Phone numbers
 
@@ -168,6 +167,13 @@ Nigeria-wide capture, Lagos-first precision: every state is selectable, Lagos ge
 20 LGAs as a dropdown, and everywhere else takes a free-text area. At pilot volumes
 free text can be normalised by hand in minutes; seeding all 774 LGAs would be work
 without a payoff.
+
+## Schema
+
+Seven tables: `products`, `states`, `lgas`, `people`, `pools`, `pool_members`,
+`product_requests`. Nothing else. The tables belonging to the replaced list flow were
+dropped rather than left lying around, because dead schema makes it ambiguous which
+one is authoritative.
 
 ## Analysis
 

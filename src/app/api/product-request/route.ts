@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { demandLists, productRequests } from "@/db/schema";
+import { productRequests } from "@/db/schema";
 import { ensureAnonId } from "@/lib/session";
 
 const bodySchema = z.object({
@@ -24,20 +23,10 @@ export async function POST(request: Request) {
 
   const anonId = await ensureAnonId();
 
-  const draft = (
-    await db
-      .select({ id: demandLists.id })
-      .from(demandLists)
-      .where(and(eq(demandLists.anonId, anonId), eq(demandLists.status, "draft")))
-      .limit(1)
-  )[0];
-
   await db.insert(productRequests).values({
-    listId: draft?.id ?? null,
     anonId,
     text: parsed.data.text,
     searchQuery: parsed.data.searchQuery || null,
-    source: "browse",
   });
 
   return NextResponse.json({ ok: true });
