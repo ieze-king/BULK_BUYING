@@ -44,9 +44,7 @@ export default async function ListPage() {
         <SiteHeader />
         <main className="flex-1 px-4 py-20">
           <div className="mx-auto max-w-md text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Your list is empty
-            </h1>
+            <h1 className="font-display text-2xl font-bold">Your list is empty</h1>
             <p className="mt-2 text-muted">
               Add what you want to buy in bulk and it will show up here.
             </p>
@@ -86,7 +84,7 @@ export default async function ListPage() {
             <Link href="/" className="text-sm text-muted underline underline-offset-4">
               &larr; Add more items
             </Link>
-            <h1 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h1 className="font-display mt-4 text-2xl font-bold sm:text-3xl">
               Your bulk-buying list
             </h1>
             <p className="mt-2 text-muted">

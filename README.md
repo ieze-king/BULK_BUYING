@@ -37,10 +37,24 @@ npm run db:seed                # states, Lagos LGAs, catalogue
 npm run dev
 ```
 
-- `/` — search, A–Z and categories; pick items and quantities
+- `/` — landing explainer, then search, A–Z and categories; pick items and quantities
 - `/list` — review the list, location, who you are buying for, interest, save
 - `/done` — confirmation
 - `/admin` — password-protected demand overview and CSV export
+
+## The landing page
+
+Someone arriving from a WhatsApp link has no idea what this is, so `/` answers four
+things before asking for anything: what it is, how it works, whether it is for them,
+and what it will cost. The picker sits directly below, reachable from the hero CTA.
+
+The one illustration earns its place — it shows a demand pool filling toward a
+supplier's minimum, which is the mechanism nobody guesses from a product list. It is
+static example data and is labelled **Example** so it is never read as live numbers.
+
+Typography is Bricolage Grotesque for display and Instrument Sans for body, both
+self-hosted through `next/font` so there are no external font requests on a cold
+mobile connection.
 
 ## The interest question
 

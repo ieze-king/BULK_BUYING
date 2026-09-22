@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { products } from "@/db/schema";
 import { CATEGORY_ORDER } from "@/lib/catalog";
 import { DemandBuilder } from "@/components/demand-builder";
+import { Landing } from "@/components/landing";
 import { getInterestCounts, MIN_TOTAL_TO_SHOW } from "@/lib/interest";
 
 /**
@@ -34,7 +35,7 @@ export default async function Home() {
       products={rows}
       categories={categories}
       interestByProduct={byProduct}
-      totalPeople={totalPeople >= MIN_TOTAL_TO_SHOW ? totalPeople : 0}
+      intro={<Landing totalPeople={totalPeople >= MIN_TOTAL_TO_SHOW ? totalPeople : 0} />}
     />
   );
 }

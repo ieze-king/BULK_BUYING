@@ -55,7 +55,7 @@ export default async function DonePage() {
           <div className="grid size-11 place-items-center rounded-full bg-accent text-lg text-accent-contrast">
             &#10003;
           </div>
-          <h1 className="mt-5 text-2xl font-semibold tracking-tight sm:text-3xl">
+          <h1 className="font-display mt-5 text-2xl font-bold sm:text-3xl">
             Your demand has been recorded
           </h1>
           <p className="mt-2 text-muted">We&rsquo;ve saved your list.</p>

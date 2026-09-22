@@ -1,21 +1,30 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+/* Display face with real character; body face tuned for small Android screens. */
+const display = Bricolage_Grotesque({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  display: "swap",
+});
+
+const body = Instrument_Sans({
+  variable: "--font-body",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Buy in bulk, together",
+  title: "Bulk prices aren't for big buyers — Buy in bulk, together",
   description:
-    "Tell us what you want to buy in bulk and how much. We aggregate demand and connect it with bulk suppliers.",
+    "You don't need to buy a hundred bags to get the hundred-bag price. Tell us what you want, we combine it with everyone else, and take the whole order to suppliers.",
   openGraph: {
-    title: "Buy in bulk, together",
+    title: "Bulk prices aren't for big buyers. They're for big orders.",
     description:
-      "Tell us what you want to buy in bulk and how much. We aggregate demand and connect it with bulk suppliers.",
+      "You don't need to buy a hundred bags to get the hundred-bag price. Tell us what you want in bulk and we combine it with everyone else.",
     type: "website",
   },
 };
@@ -23,12 +32,15 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0f7a4f",
+  themeColor: "#0b7a48",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${display.variable} ${body.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );

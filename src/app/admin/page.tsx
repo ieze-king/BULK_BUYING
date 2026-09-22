@@ -80,7 +80,7 @@ export default async function AdminPage() {
   return (
     <main className="flex-1 px-4 py-8 max-w-5xl mx-auto space-y-10">
       <div className="flex items-baseline justify-between gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Demand overview</h1>
+        <h1 className="font-display text-2xl font-bold">Demand overview</h1>
         <a href="/admin/export" className="text-sm text-accent underline underline-offset-4">
           Export CSV
         </a>

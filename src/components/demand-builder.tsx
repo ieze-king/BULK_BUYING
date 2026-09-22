@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { ProductCard, type Product } from "@/components/product-card";
 import { MissingProduct } from "@/components/missing-product";
-import { peoplePhrase, unitPhrase } from "@/lib/format";
+import { unitPhrase } from "@/lib/format";
 import { MAX_QUANTITY } from "@/lib/validation";
 
 const STORAGE_KEY = "bb_selection_v1";
@@ -32,13 +32,13 @@ export function DemandBuilder({
   products,
   categories,
   interestByProduct,
-  totalPeople,
+  intro,
 }: {
   products: Product[];
   categories: string[];
   interestByProduct: Record<number, number>;
-  /** Suppressed below a threshold: an early low number discourages people. */
-  totalPeople: number;
+  /** The explainer, rendered above the picker. A server component, passed in. */
+  intro?: React.ReactNode;
 }) {
   const router = useRouter();
 
@@ -201,24 +201,17 @@ export function DemandBuilder({
       <SiteHeader listCount={hydrated ? itemCount : 0} />
 
       <main className="flex-1 pb-32 lg:pb-16">
-        <div className="mx-auto max-w-6xl px-4">
-          <section className="pt-10 pb-7 sm:pt-14">
-            <h1 className="max-w-2xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+        {intro}
+
+        <div id="pick" className="mx-auto max-w-6xl scroll-mt-16 px-4">
+          <section className="border-t border-border pt-12 pb-7">
+            <h2 className="font-display max-w-2xl text-[1.75rem] font-bold leading-tight text-balance sm:text-4xl">
               What do you want to buy in bulk?
-            </h1>
+            </h2>
             <p className="mt-3 max-w-xl leading-relaxed text-muted">
-              Select what you need and how much. We&rsquo;ll combine demand from people
-              and businesses to unlock bulk purchasing opportunities.
+              Select what you need and how much. Nothing is ordered and nothing is owed
+              &mdash; we are finding out what people want.
             </p>
-            {totalPeople > 0 && (
-              <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm">
-                <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
-                <span>
-                  <strong className="font-semibold">{peoplePhrase(totalPeople)}</strong>{" "}
-                  have shared what they want to buy in bulk
-                </span>
-              </p>
-            )}
           </section>
 
           {hydrated && returning && itemCount > 0 && (
