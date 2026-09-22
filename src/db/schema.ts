@@ -119,13 +119,25 @@ export const demandListItems = pgTable(
   (t) => [uniqueIndex("demand_list_items_list_product_idx").on(t.listId, t.productId)],
 );
 
-/** Free-text "I couldn't find what I want" — the catalogue gap signal. */
-export const productRequests = pgTable("product_requests", {
-  id: serial("id").primaryKey(),
-  listId: integer("list_id").references(() => demandLists.id, { onDelete: "cascade" }),
-  text: text("text").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+/**
+ * "I couldn't find what I want" — the catalogue gap signal, and the only
+ * source that tells us what to add without guessing. Captured both while
+ * browsing (especially on a search that found nothing) and when saving a list.
+ */
+export const productRequests = pgTable(
+  "product_requests",
+  {
+    id: serial("id").primaryKey(),
+    listId: integer("list_id").references(() => demandLists.id, { onDelete: "cascade" }),
+    anonId: text("anon_id"),
+    text: text("text").notNull(),
+    /** The search that returned nothing, when the request came from one. */
+    searchQuery: text("search_query"),
+    source: text("source", { enum: ["browse", "list"] }).notNull().default("list"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("product_requests_created_idx").on(t.createdAt)],
+);
 
 /** Minimal, unregrettable event log. Four types, not seven. */
 export const events = pgTable(

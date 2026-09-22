@@ -1,5 +1,5 @@
 import "../lib/load-env";
-import { sql } from "drizzle-orm";
+import { notInArray, sql } from "drizzle-orm";
 import { db } from "./index";
 import { lgas, products, states } from "./schema";
 import { CATALOG } from "../lib/catalog";
@@ -34,6 +34,17 @@ async function main() {
         sortOrder: excluded("sort_order"),
       },
     });
+
+  // Anything dropped from the catalogue is retired rather than deleted: old
+  // demand rows still reference it, so it must keep existing.
+  const retired = await db
+    .update(products)
+    .set({ active: false })
+    .where(notInArray(products.slug, CATALOG.map((p) => p.slug)))
+    .returning({ slug: products.slug });
+  if (retired.length > 0) {
+    console.log(`Retired ${retired.length}: ${retired.map((r) => r.slug).join(", ")}`);
+  }
 
   console.log(
     `Done: ${STATES.length} states, ${LAGOS_LGAS.length} Lagos LGAs, ${CATALOG.length} products.`,

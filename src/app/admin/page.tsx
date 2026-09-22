@@ -150,18 +150,21 @@ export default async function AdminPage() {
       </div>
 
       <section>
-        <h2 className="font-medium mb-3">Items people wanted but could not find</h2>
-        {gaps.length === 0 ? (
-          <p className="text-sm text-muted">Nothing reported yet.</p>
-        ) : (
-          <ul className="space-y-2 text-sm">
-            {gaps.map((g, i) => (
-              <li key={i} className="rounded-lg border border-border bg-surface px-3 py-2">
-                {g.text}
-              </li>
-            ))}
-          </ul>
-        )}
+        <h2 className="font-medium mb-3">Add these next</h2>
+        <p className="text-sm text-muted mb-3">
+          What people asked for and could not find, most requested first. &ldquo;From
+          search&rdquo; counts the times someone searched for it and got nothing, which
+          is the strongest signal here.
+        </p>
+        <Table
+          headers={["Request", "Times asked", "From search", "Last asked"]}
+          rows={gaps.map((g) => [
+            g.request,
+            g.times,
+            g.from_search,
+            new Date(g.last_asked).toLocaleDateString("en-NG"),
+          ])}
+        />
       </section>
     </main>
   );

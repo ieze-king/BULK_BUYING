@@ -63,6 +63,16 @@ We do not have real supplier quotes. An invented figure is worse than none: peop
 read it as our offer, and it biases the very demand we are trying to measure. The
 column stays in the schema so real quotes can be added later without a migration.
 
+## Catalogue gaps
+
+"Can't find what you want to buy?" appears at the foot of the product list, and the same
+control appears — prominently, with the search term prefilled — whenever a search returns
+nothing. That is the highest-signal moment there is: the person has just told you what
+they want and the catalogue failed them.
+
+Reports are grouped case-insensitively and ranked in the admin under **Add these next**,
+with a "From search" column counting the times a request came from a failed search.
+
 ## Social proof
 
 Product cards show "N people want this", and the hero shows how many people have taken
@@ -96,7 +106,7 @@ number format and dedupe are already in place.
 
 ## Catalogue
 
-32 items in `src/lib/catalog.ts`, edited in code and re-seeded with `npm run db:seed`
+97 items in `src/lib/catalog.ts`, edited in code and re-seeded with `npm run db:seed`
 (idempotent — it upserts on `slug`).
 
 It is curated on purpose. A catalogue that grows without naming discipline splits one
@@ -104,9 +114,20 @@ commodity across several entries ("Rice", "Mama Gold 50kg", "foreign parboiled")
 makes demand impossible to sum, which is the one thing this pilot has to do.
 
 Add breadth through `aliases` rather than new rows: those are the words people actually
-type ("indomie", "coke", "dangote", "parboiled") and they feed both search and the
-suggestion dropdown. The free-text "anything we are missing?" field on the list page is
-how you discover what genuinely needs adding.
+type ("indomie", "coke", "hypo", "geepee", "okporoko", "rodo") and they feed both search
+and the suggestion dropdown.
+
+There is no product API worth importing here. Open Food Facts is barcode-level branded
+SKUs with thin Nigerian coverage; Google Product Taxonomy and UNSPSC are category trees
+with no items; commodity APIs cover traded futures. None of them model the unit
+vocabulary — bag, carton, crate, keg, cylinder, trip, bundle, length — that makes
+quantities addable, and importing thousands of SKUs would split each commodity into
+unsummable rows.
+
+**Let `product_requests` drive additions instead.** It is the only source that tells you
+what to add without guessing, and the admin dashboard ranks it under "Add these next".
+Removing an item from `CATALOG` retires it (`active = false`) rather than deleting it,
+because existing demand rows still reference it.
 
 ## Location
 

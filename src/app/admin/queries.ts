@@ -115,13 +115,26 @@ export async function bySegment() {
   return rows;
 }
 
-export type Gap = { text: string; created_at: string };
+export type Gap = {
+  request: string;
+  times: number;
+  from_search: number;
+  last_asked: string;
+};
 
+/**
+ * What to add to the catalogue next, ranked by how many people asked.
+ * Grouped case-insensitively so "Groundnut" and "groundnut" are one row.
+ */
 export async function catalogueGaps() {
   const { rows } = await db.execute<Gap>(sql`
-    SELECT text, created_at
+    SELECT lower(btrim(text)) AS request,
+           COUNT(*)::int AS times,
+           COUNT(*) FILTER (WHERE search_query IS NOT NULL)::int AS from_search,
+           MAX(created_at) AS last_asked
     FROM product_requests
-    ORDER BY created_at DESC
+    GROUP BY lower(btrim(text))
+    ORDER BY times DESC, last_asked DESC
     LIMIT 50
   `);
   return rows;

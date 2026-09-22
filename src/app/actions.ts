@@ -78,7 +78,12 @@ export async function submitDemand(
     );
 
   if (d.productRequest) {
-    await db.insert(productRequests).values({ listId: list.id, text: d.productRequest });
+    await db.insert(productRequests).values({
+      listId: list.id,
+      anonId,
+      text: d.productRequest,
+      source: "list",
+    });
   }
 
   await db.insert(events).values({

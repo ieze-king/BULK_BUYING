@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { ProductCard, type Product } from "@/components/product-card";
+import { MissingProduct } from "@/components/missing-product";
 import { peoplePhrase, unitPhrase } from "@/lib/format";
 import { MAX_QUANTITY } from "@/lib/validation";
 
@@ -380,10 +381,16 @@ export function DemandBuilder({
 
               {/* Products */}
               {groups.length === 0 ? (
-                <p className="rounded-xl border border-border bg-surface px-4 py-8 text-center text-muted">
-                  Nothing matches &ldquo;{query}&rdquo;. Try another word, or tell us what
-                  is missing when you save your list.
-                </p>
+                <div className="space-y-4">
+                  <p className="rounded-xl border border-border bg-surface px-4 py-6 text-center text-muted">
+                    Nothing matches &ldquo;{query}&rdquo;.
+                  </p>
+                  <MissingProduct
+                    key={query.trim()}
+                    searchQuery={query.trim()}
+                    variant="prominent"
+                  />
+                </div>
               ) : (
                 <div className="space-y-7">
                   {groups.map((group) => (
@@ -407,15 +414,8 @@ export function DemandBuilder({
                 </div>
               )}
 
-              <div
-                id="missing-product"
-                className="mt-8 scroll-mt-20 rounded-xl border border-dashed border-border-strong px-4 py-5 text-sm text-muted"
-              >
-                <strong className="font-medium text-foreground">
-                  Can&rsquo;t find what you want to buy?
-                </strong>{" "}
-                Add everything else first, then tell us what is missing on the next
-                screen. It is how we decide what to add.
+              <div id="missing-product" className="mt-8 scroll-mt-20">
+                <MissingProduct />
               </div>
             </div>
 
