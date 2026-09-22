@@ -4,7 +4,7 @@ import { useState } from "react";
 
 /**
  * Catalogue gap capture. Shown at the bottom of the list, and prominently when
- * a search finds nothing — the moment someone has just told us what they want
+ * a search finds nothing, the moment someone has just told us what they want
  * and we have failed to offer it.
  */
 export function MissingProduct({
@@ -16,7 +16,7 @@ export function MissingProduct({
 }) {
   // Seeded from the search term. The caller passes the query as `key`, so a new
   // search remounts this with a fresh value rather than syncing state in an
-  // effect — and editing the field below never clobbers what was typed.
+  // effect, and editing the field below never clobbers what was typed.
   const [text, setText] = useState(searchQuery ?? "");
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -49,7 +49,7 @@ export function MissingProduct({
           prominent ? "border-accent bg-accent-soft" : "border-border bg-surface"
         }`}
       >
-        <strong className="font-medium">Thank you &mdash; noted.</strong>{" "}
+        <strong className="font-medium">Thank you, noted.</strong>{" "}
         <span className="text-muted">
           We add what people ask for most, so this genuinely counts.
         </span>

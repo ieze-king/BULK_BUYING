@@ -73,9 +73,9 @@ export default async function AdminPage() {
   ]);
 
   const interestRate =
-    f.submitted > 0 ? `${Math.round((100 * f.interested) / f.submitted)}%` : "—";
+    f.submitted > 0 ? `${Math.round((100 * f.interested) / f.submitted)}%` : "None yet";
   const completion =
-    f.added_item > 0 ? `${Math.round((100 * f.submitted) / f.added_item)}%` : "—";
+    f.added_item > 0 ? `${Math.round((100 * f.submitted) / f.added_item)}%` : "None yet";
 
   return (
     <main className="flex-1 px-4 py-8 max-w-5xl mx-auto space-y-10">

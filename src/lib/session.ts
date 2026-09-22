@@ -14,7 +14,7 @@ export async function getAnonId(): Promise<string | null> {
   return store.get(ANON_COOKIE)?.value ?? null;
 }
 
-/** Must be called from a Server Action or Route Handler — cookies are read-only in RSC. */
+/** Must be called from a Server Action or Route Handler: cookies are read-only in RSC. */
 export async function ensureAnonId(): Promise<string> {
   const store = await cookies();
   const existing = store.get(ANON_COOKIE)?.value;

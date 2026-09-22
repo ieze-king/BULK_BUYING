@@ -10,11 +10,15 @@ import { peoplePhrase } from "@/lib/format";
  * labelled as an example so it is never mistaken for live data.
  */
 
+/*
+ * Proportions only, no quantities. We do not know any supplier's real minimum
+ * order, and putting a number here would read as a claim about actual terms.
+ */
 const POOL = [
-  { who: "A retailer in Ikeja", qty: 20, pct: 20 },
-  { who: "A restaurant", qty: 15, pct: 15 },
-  { who: "Six households", qty: 12, pct: 12 },
-  { who: "A caterer", qty: 5, pct: 5 },
+  { who: "A retailer", pct: 20 },
+  { who: "A restaurant", pct: 15 },
+  { who: "A few households", pct: 12 },
+  { who: "A caterer", pct: 8 },
 ];
 
 const STEPS = [
@@ -26,7 +30,7 @@ const STEPS = [
   {
     n: "02",
     title: "We add everyone up",
-    body: "Your 5 bags join everybody else's. Together the order reaches the quantity suppliers care about.",
+    body: "What you want joins everybody else's. Together the order reaches a size suppliers will price differently.",
   },
   {
     n: "03",
@@ -36,7 +40,7 @@ const STEPS = [
 ];
 
 const AUDIENCES = [
-  { title: "Households", body: "Buy a few bags at the price normally reserved for a hundred." },
+  { title: "Households", body: "Buy a small amount at the price normally reserved for a large order." },
   { title: "Businesses", body: "Restaurants, schools, hotels and caterers buying to stock up." },
   { title: "Retailers", body: "Combine with other shops and reach distributor-level pricing." },
   { title: "Suppliers", body: "See aggregated demand and move larger quantities at once." },
@@ -64,9 +68,9 @@ export function Landing({ totalPeople }: { totalPeople: number }) {
             className="rise mt-5 max-w-xl text-lg leading-relaxed text-muted"
             style={{ animationDelay: "120ms" }}
           >
-            You don&rsquo;t need to buy a hundred bags to get the hundred-bag price. Tell
-            us what you want, we combine it with everyone else, and take the whole order
-            to suppliers.
+            You don&rsquo;t need to place a big order on your own to get big-order
+            prices. Tell us what you want, we combine it with everyone else, and take
+            the whole order to suppliers.
           </p>
 
           <div
@@ -121,8 +125,8 @@ export function Landing({ totalPeople }: { totalPeople: number }) {
           </div>
 
           <p className="mt-1.5 text-sm text-muted">
-            A supplier will sell rice at bulk price, but only for 100 bags at once.
-            Nobody here wants 100 bags. Together, they do.
+            Suppliers price differently once an order passes a certain size. On their
+            own, none of these buyers get near it. Combined, they do.
           </p>
 
           <div className="mt-5">
@@ -142,7 +146,7 @@ export function Landing({ totalPeople }: { totalPeople: number }) {
                 className="flex flex-1 items-center justify-end pr-3 text-xs font-medium text-muted"
                 aria-hidden="true"
               >
-                48 bags still needed
+                still filling
               </div>
             </div>
 
@@ -156,18 +160,15 @@ export function Landing({ totalPeople }: { totalPeople: number }) {
                     }}
                   />
                   <span className="text-muted">{seg.who}</span>
-                  <span className="ml-auto font-medium tabular-nums">
-                    {seg.qty} bags
-                  </span>
                 </li>
               ))}
             </ul>
 
             <p className="mt-4 border-t border-border pt-4 text-sm">
-              <strong className="font-semibold">52 of 100 bags committed.</strong>{" "}
+              <strong className="font-semibold">One order, many buyers.</strong>{" "}
               <span className="text-muted">
-                When it reaches 100, everyone pays the bulk price &mdash; including the
-                household that only wanted two.
+                Once it is big enough, everyone on it pays the bulk price, including the
+                household that only wanted a little.
               </span>
             </p>
           </div>
@@ -197,8 +198,8 @@ export function Landing({ totalPeople }: { totalPeople: number }) {
         <section className="pb-16 sm:pb-20">
           <h2 className="font-display text-2xl font-bold sm:text-3xl">Who it&rsquo;s for</h2>
           <p className="mt-2 max-w-xl text-muted">
-            Anyone who buys in quantity. You do not need a shop or a company &mdash; a
-            household wanting two bags counts exactly the same.
+            Anyone who buys in quantity. You do not need a shop or a company. A
+            household wanting a small amount counts exactly the same.
           </p>
           <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {AUDIENCES.map((a) => (

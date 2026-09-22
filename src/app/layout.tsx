@@ -18,13 +18,13 @@ const body = Instrument_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Bulk prices aren't for big buyers — Buy in bulk, together",
+  title: "Bulk prices aren't for big buyers. They're for big orders.",
   description:
-    "You don't need to buy a hundred bags to get the hundred-bag price. Tell us what you want, we combine it with everyone else, and take the whole order to suppliers.",
+    "You don't need to place a big order on your own to get big-order prices. Tell us what you want, we combine it with everyone else, and take the whole order to suppliers.",
   openGraph: {
     title: "Bulk prices aren't for big buyers. They're for big orders.",
     description:
-      "You don't need to buy a hundred bags to get the hundred-bag price. Tell us what you want in bulk and we combine it with everyone else.",
+      "You don't need to place a big order on your own to get big-order prices. Tell us what you want in bulk and we combine it with everyone else.",
     type: "website",
   },
 };

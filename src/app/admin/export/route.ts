@@ -18,7 +18,7 @@ function toCsv(rows: Row[]): string {
   ].join("\n");
 }
 
-/** One row per (submission, item) — the shape you want in a spreadsheet. */
+/** One row per (submission, item): the shape you want in a spreadsheet. */
 export async function GET() {
   if (!(await isAdmin())) {
     return new Response("Unauthorized", { status: 401 });

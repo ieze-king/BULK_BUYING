@@ -1,4 +1,4 @@
-/** "12 people" / "1 person" — the social-proof line on a product card. */
+/** "12 people" / "1 person", the social-proof line on a product card. */
 export function peoplePhrase(count: number) {
   return `${count} ${count === 1 ? "person" : "people"}`;
 }

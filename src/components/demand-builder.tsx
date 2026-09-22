@@ -209,8 +209,8 @@ export function DemandBuilder({
               What do you want to buy in bulk?
             </h2>
             <p className="mt-3 max-w-xl leading-relaxed text-muted">
-              Select what you need and how much. Nothing is ordered and nothing is owed
-              &mdash; we are finding out what people want.
+              Select what you need and how much. Nothing is ordered and nothing is
+              owed. We are finding out what people want.
             </p>
           </section>
 

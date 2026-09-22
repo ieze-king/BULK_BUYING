@@ -120,7 +120,7 @@ export const demandListItems = pgTable(
 );
 
 /**
- * "I couldn't find what I want" — the catalogue gap signal, and the only
+ * "I couldn't find what I want": the catalogue gap signal, and the only
  * source that tells us what to add without guessing. Captured both while
  * browsing (especially on a search that found nothing) and when saving a list.
  */
