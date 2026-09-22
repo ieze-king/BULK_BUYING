@@ -92,7 +92,7 @@ export function MissingProduct({
           type="button"
           onClick={() => void submit()}
           disabled={sending || text.trim().length < 2}
-          className="h-12 shrink-0 rounded-xl border-2 border-foreground bg-accent px-6 font-bold text-accent-contrast transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+          className="h-12 shrink-0 rounded-xl border-2 border-foreground bg-accent px-6 font-bold text-accent-contrast transition-transform hover:-translate-y-0.5 disabled:border-foreground/25 disabled:bg-surface-raised disabled:text-muted disabled:hover:translate-y-0"
         >
           {sending ? "Sending…" : "Tell us"}
         </button>

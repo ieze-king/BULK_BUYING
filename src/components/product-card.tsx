@@ -41,7 +41,7 @@ export function ProductCard({
       }`}
       style={{
         background: selected
-          ? categoryTint(product.category, 22)
+          ? categoryTint(product.category, 28)
           : "var(--surface)",
         boxShadow: selected ? "3px 3px 0 0 var(--foreground)" : "var(--shadow)",
       }}
@@ -107,7 +107,7 @@ export function ProductCard({
             type="button"
             onClick={() => onChange(product.id, 1)}
             className="h-9 shrink-0 rounded-xl border-2 border-foreground px-4 text-sm font-bold transition-transform hover:-translate-y-0.5 active:scale-95"
-            style={{ background: categoryTint(product.category, 30) }}
+            style={{ background: categoryTint(product.category, 45) }}
           >
             Add to list
           </button>

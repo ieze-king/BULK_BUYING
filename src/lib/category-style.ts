@@ -10,14 +10,19 @@ const HUES: Record<string, string> = {
   Drinks: "var(--sky)",
   Household: "var(--accent)",
   "Personal Care": "var(--indigo)",
-  "Building Materials": "var(--foreground)",
+  "Building Materials": "var(--teal)",
 };
 
 export function categoryHue(category: string) {
   return HUES[category] ?? "var(--accent)";
 }
 
-/** Colour alone never carries meaning; it always sits beside the label. */
+/**
+ * Colour alone never carries meaning; it always sits beside the label.
+ * Tints are mixed with white rather than transparent so they stay the same
+ * whatever they sit on, and stay saturated enough to read as a control rather
+ * than as a disabled one.
+ */
 export function categoryTint(category: string, pct = 14) {
-  return `color-mix(in oklab, ${categoryHue(category)} ${pct}%, transparent)`;
+  return `color-mix(in oklab, ${categoryHue(category)} ${pct}%, #ffffff)`;
 }

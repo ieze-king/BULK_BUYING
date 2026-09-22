@@ -31,6 +31,7 @@
   --indigo: #4436c7;
   --sky: #1c9fd8;
   --plum: #b0267d;
+  --teal: #0d8f8f;
 
   --shadow: 0 2px 0 0 var(--border-strong);
   --shadow-pop: 4px 4px 0 0 var(--foreground);
@@ -54,6 +55,7 @@
   --color-indigo: var(--indigo);
   --color-sky: var(--sky);
   --color-plum: var(--plum);
+  --color-teal: var(--teal);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
 }

@@ -356,7 +356,7 @@ export function DemandBuilder({
                             : "color-mix(in oklab, var(--foreground) 15%, transparent)",
                           background: active
                             ? categoryHue(category)
-                            : categoryTint(category, 16),
+                            : categoryTint(category, 32),
                           boxShadow: active ? "3px 3px 0 0 var(--foreground)" : undefined,
                         }}
                       >
