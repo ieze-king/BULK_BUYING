@@ -183,13 +183,41 @@ beats building chart UI.
 
 ## Deploying
 
-1. Create a Neon project (free tier) and copy the **pooled** connection string.
-2. Import the repo into Vercel.
-3. Set `DATABASE_URL` and `ADMIN_PASSWORD` in Vercel's environment variables.
-4. Run `npm run db:push && npm run db:seed` against the Neon URL once.
+Neon directly rather than through the Vercel Marketplace: the free tier is
+unambiguous, and the connection string stays portable if the app ever moves off
+Vercel.
 
-Note: Vercel's Hobby tier is for non-commercial use. It is fine for a validation pilot;
-budget for Pro (~$20/mo) if this converts into a business.
+1. Create a free project at neon.tech and copy the **pooled** connection string, the
+   one with `-pooler` in the hostname.
+2. Put it in `.env.production.local` (gitignored):
 
-The landing page is cached (`revalidate = 3600`) so the first paint of a link opened
-from WhatsApp never waits on a sleeping free-tier database.
+   ```
+   DATABASE_URL="postgresql://...-pooler.../neondb?sslmode=require"
+   ```
+
+3. Create the schema and catalogue in that database:
+
+   ```bash
+   npm run db:setup:prod
+   ```
+
+4. Import the GitHub repo at vercel.com/new. Vercel detects Next.js with no
+   configuration, and every push to `main` deploys itself from then on.
+5. In the Vercel project settings add two environment variables:
+   `DATABASE_URL` (the same pooled string) and `ADMIN_PASSWORD` (a real one, since
+   `/admin` shows every submitted name and phone number).
+
+Importing the repo is preferred over `vercel --prod` from a laptop: deployments then
+follow the branch rather than whoever last ran the CLI.
+
+A build does not need a reachable database, so the order of steps 3 and 4 does not
+matter and a missing variable will not produce a confusing build failure.
+
+Note: Vercel's Hobby tier is for non-commercial use. It is fine for a validation
+pilot; budget for Pro if this converts into a business.
+
+### Schema changes after launch
+
+`drizzle-kit push` is right for a fresh database but wrong for one holding real user
+data. Before launch, switch to generated migrations (`drizzle-kit generate`, then
+`drizzle-kit migrate`) so schema changes are reviewable and reversible.
