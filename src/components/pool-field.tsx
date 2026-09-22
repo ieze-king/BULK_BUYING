@@ -4,12 +4,22 @@ import { categoryHue, categoryTint } from "@/lib/category-style";
 import type { PoolSummary, Starter } from "@/lib/pools";
 
 /** An invitation, not demand: no quantity, because nobody has joined yet. */
-function StarterBubble({ starter, index }: { starter: Starter; index: number }) {
+function StarterBubble({
+  starter,
+  index,
+  size,
+}: {
+  starter: Starter;
+  index: number;
+  size: number;
+}) {
   return (
     <Link
       href={`/start?product=${starter.productId}`}
-      className="rise grid size-[118px] shrink-0 place-items-center rounded-full border-2 border-dashed border-foreground/40 p-3 text-center transition-transform hover:-translate-y-1.5 hover:border-solid hover:border-foreground"
+      className="rise grid shrink-0 place-items-center rounded-full border-2 border-dashed border-foreground/40 p-3 text-center transition-transform hover:-translate-y-1.5 hover:border-solid hover:border-foreground"
       style={{
+        width: size,
+        height: size,
         background: categoryTint(starter.category, 16),
         animationDelay: `${Math.min(index * 60, 600)}ms`,
       }}
@@ -37,6 +47,9 @@ export function PoolField({
   starters?: Starter[];
 }) {
   const max = pools.length > 0 ? Math.max(...pools.map((p) => p.total_quantity)) : 0;
+  // All starters are the same size, because none of them has any demand yet.
+  // Making some bigger would be inventing a difference that does not exist.
+  const starterSize = pools.length === 0 ? 150 : 118;
 
   return (
     <>
@@ -45,17 +58,22 @@ export function PoolField({
           <Bubble key={pool.slug} pool={pool} max={max} index={i} />
         ))}
         {starters.map((s, i) => (
-          <StarterBubble key={s.productId} starter={s} index={pools.length + i} />
+          <StarterBubble
+            key={s.productId}
+            starter={s}
+            index={pools.length + i}
+            size={starterSize}
+          />
         ))}
       </div>
 
-      {pools.length === 0 && (
+      {pools.length === 0 && starters.length === 0 && (
         <p className="mx-auto mt-8 max-w-md text-center text-lg">
-          Nobody has started a pool yet.{" "}
+          Nothing to show yet.{" "}
           <Link href="/start" className="font-bold underline underline-offset-4">
-            Be the first
+            Start the first pool
           </Link>
-          , then send it to your street, your estate group or your trade association.
+          .
         </p>
       )}
     </>

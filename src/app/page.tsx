@@ -24,6 +24,7 @@ export default async function Home() {
     pools.map((p) => p.product_id),
     Math.max(0, 10 - pools.length),
   );
+  const hasPools = pools.length > 0;
 
   return (
     <>
@@ -86,17 +87,18 @@ export default async function Home() {
           <div className="mx-auto max-w-6xl">
             <div className="mb-8 text-center">
               <h2 className="font-display text-3xl font-black sm:text-4xl">
-                Pools growing now
+                {hasPools ? "Pools growing now" : "Nothing has started yet"}
               </h2>
-              <p className="mt-2">
-                Each bubble is a group order. The bigger it is, the more people have
-                joined. Tap one to add what you want.
+              <p className="mx-auto mt-2 max-w-xl">
+                {hasPools
+                  ? "Each bubble is a group order. The bigger it is, the more people have joined. Tap one to add what you want."
+                  : "Every bubble below is waiting for someone to start it. Pick what you buy, say how many, and send it to people who buy the same thing."}
               </p>
             </div>
 
             <PoolField pools={pools} starters={starters} />
 
-            {pools.length > 0 && (
+            {(
               <div className="mt-12 text-center">
                 <p className="text-lg font-semibold">Not seeing what you buy?</p>
                 <Link

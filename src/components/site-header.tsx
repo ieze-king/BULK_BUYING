@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export function SiteHeader({ listCount }: { listCount?: number }) {
+export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b-2 border-foreground/10 bg-background/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
@@ -14,14 +14,12 @@ export function SiteHeader({ listCount }: { listCount?: number }) {
           <span className="font-display text-xl font-black tracking-tight">Bulk</span>
         </Link>
 
-        {listCount !== undefined && listCount > 0 && (
-          <Link
-            href="/list"
-            className="pop rounded-xl bg-marigold px-4 py-2 text-sm font-bold text-foreground transition-transform hover:-translate-y-0.5"
-          >
-            My List ({listCount})
-          </Link>
-        )}
+        <Link
+          href="/start"
+          className="pop rounded-xl bg-marigold px-4 py-2 text-sm font-bold text-foreground transition-transform hover:-translate-y-0.5"
+        >
+          Start a pool
+        </Link>
       </div>
     </header>
   );

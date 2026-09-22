@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState } from "react";
 import { startPool, type PoolFormState } from "@/app/pool-actions";
 import { FieldError, JoinFields, inputClass } from "@/components/join-fields";
+import { MissingProduct } from "@/components/missing-product";
 import { categoryTint } from "@/lib/category-style";
 import { LAGOS_CODE } from "@/lib/naija";
 
@@ -115,6 +116,15 @@ export function StartForm({
                     {c}
                   </button>
                 ))}
+              </div>
+            )}
+            {query.trim().length > 1 && results.length === 0 && (
+              <div className="mt-4">
+                <MissingProduct
+                  key={query.trim()}
+                  searchQuery={query.trim()}
+                  variant="prominent"
+                />
               </div>
             )}
             {results.length > 0 && (
