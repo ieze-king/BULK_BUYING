@@ -8,10 +8,10 @@ export const MAX_ITEMS = 25;
 export const quantitySchema = z.coerce.number().int().min(0).max(MAX_QUANTITY);
 
 export const participantTypeSchema = z.enum([
-  "individual",
+  "household",
   "business",
-  "retailer",
-  "distributor",
+  "retail",
+  "other",
 ]);
 
 /** Browsers submit present-but-empty fields as ""; treat that as absent. */

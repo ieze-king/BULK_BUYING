@@ -18,8 +18,11 @@ export const products = pgTable("products", {
   category: text("category").notNull(),
   /** The unit people buy in: "bag", "carton", "crate". Shown next to the stepper. */
   unitLabel: text("unit_label").notNull(),
-  /** Indicative bulk price per unit, in naira. Drives the commitment question. */
+  /** Indicative bulk price per unit, in naira. Drives the commitment question.
+   *  Never shown while browsing — only on the submit screen, clearly labelled. */
   indicativePriceNgn: integer("indicative_price_ngn"),
+  /** Extra words people actually search for: "indomie", "coke", "parboiled". */
+  aliases: text("aliases").notNull().default(""),
   sortOrder: integer("sort_order").notNull().default(0),
   active: boolean("active").notNull().default(true),
 });
@@ -61,7 +64,7 @@ export const demandLists = pgTable(
     /** E.164 without the +, e.g. 2348031234567. Used for dedupe. */
     phoneNormalized: text("phone_normalized"),
     participantType: text("participant_type", {
-      enum: ["individual", "business", "retailer", "distributor"],
+      enum: ["household", "business", "retail", "other"],
     }),
 
     // Where
@@ -76,6 +79,13 @@ export const demandLists = pgTable(
     wouldBuyAtPrice: boolean("would_buy_at_price"),
 
     consentedAt: timestamp("consented_at", { withTimezone: true }),
+
+    /**
+     * Set when the same person submits again after editing their list. People
+     * are invited to come back and update, so without this the earlier
+     * submission would be counted a second time.
+     */
+    supersededAt: timestamp("superseded_at", { withTimezone: true }),
 
     // Funnel: three timestamps instead of an event-type taxonomy.
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

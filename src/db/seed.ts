@@ -30,6 +30,7 @@ async function main() {
         category: excluded("category"),
         unitLabel: excluded("unit_label"),
         indicativePriceNgn: excluded("indicative_price_ngn"),
+        aliases: excluded("aliases"),
         sortOrder: excluded("sort_order"),
       },
     });

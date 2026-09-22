@@ -43,7 +43,7 @@ export async function GET() {
     JOIN products p ON p.id = i.product_id
     LEFT JOIN states s ON s.code = l.state_code
     LEFT JOIN lgas g ON g.id = l.lga_id
-    WHERE l.status = 'submitted'
+    WHERE l.status = 'submitted' AND l.superseded_at IS NULL
     ORDER BY l.submitted_at DESC, p.name
   `);
 

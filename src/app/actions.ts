@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, ne, or } from "drizzle-orm";
 import { db } from "@/db";
 import { demandLists, events, productRequests } from "@/db/schema";
 import { getAnonId } from "@/lib/session";
@@ -62,6 +62,20 @@ export async function submitDemand(
       updatedAt: new Date(),
     })
     .where(eq(demandLists.id, list.id));
+
+  // Supersede this person's earlier submissions, matched on device or number,
+  // so an updated list replaces the old one instead of doubling the demand.
+  await db
+    .update(demandLists)
+    .set({ supersededAt: new Date() })
+    .where(
+      and(
+        eq(demandLists.status, "submitted"),
+        isNull(demandLists.supersededAt),
+        ne(demandLists.id, list.id),
+        or(eq(demandLists.anonId, anonId), eq(demandLists.phoneNormalized, d.phone)),
+      ),
+    );
 
   if (d.productRequest) {
     await db.insert(productRequests).values({ listId: list.id, text: d.productRequest });

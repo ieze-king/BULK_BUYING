@@ -1,36 +1,53 @@
 @import "tailwindcss";
 
+/*
+  Neutral base, one green accent. The accent is reserved for actions,
+  selection and progress; nothing decorative uses it.
+*/
 :root {
-  --background: #fbf9f5;
+  --background: #fcfcfb;
   --surface: #ffffff;
-  --foreground: #1a1714;
-  --muted: #6b635a;
-  --border: #e6e0d6;
-  --accent: #0f7a4f;
+  --surface-raised: #f6f6f4;
+  --foreground: #16161a;
+  --muted: #6d6d75;
+  --border: #e6e6e2;
+  --border-strong: #d4d4ce;
+  --accent: #0b7a48;
+  --accent-hover: #096239;
   --accent-contrast: #ffffff;
-  --accent-soft: #e8f4ed;
+  --accent-soft: #e9f5ee;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 1px 3px rgb(0 0 0 / 0.06);
+  --shadow-lifted: 0 -1px 3px rgb(0 0 0 / 0.06), 0 -8px 24px rgb(0 0 0 / 0.06);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #14120f;
-    --surface: #1e1b17;
-    --foreground: #f4f1ec;
-    --muted: #a49a8d;
-    --border: #322d26;
-    --accent: #3bbd82;
-    --accent-contrast: #0b1a12;
-    --accent-soft: #1b2f24;
+    --background: #0d0e0f;
+    --surface: #17181a;
+    --surface-raised: #1f2023;
+    --foreground: #f2f2f0;
+    --muted: #9a9aa2;
+    --border: #2a2b2e;
+    --border-strong: #3a3b3f;
+    --accent: #2fb673;
+    --accent-hover: #38c67f;
+    --accent-contrast: #06180f;
+    --accent-soft: #14271d;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-lifted: 0 -1px 3px rgb(0 0 0 / 0.4), 0 -8px 24px rgb(0 0 0 / 0.35);
   }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-contrast: var(--accent-contrast);
   --color-accent-soft: var(--accent-soft);
   --font-sans: var(--font-geist-sans);
@@ -39,11 +56,31 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Stops iOS/Android in-app browsers zooming when a field is focused. */
+/* Stops Android/iOS in-app browsers zooming when a field is focused. */
 input,
 select,
 textarea {
   font-size: 16px;
+}
+
+/* The A–Z rail scrolls horizontally on mobile; hide its scrollbar. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

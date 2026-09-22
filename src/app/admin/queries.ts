@@ -25,7 +25,7 @@ export async function productDemand() {
     FROM demand_list_items i
     JOIN demand_lists l ON l.id = i.list_id
     JOIN products p ON p.id = i.product_id
-    WHERE l.status = 'submitted'
+    WHERE l.status = 'submitted' AND l.superseded_at IS NULL
     GROUP BY p.id, p.name, p.unit_label
     ORDER BY total_quantity DESC
   `);
@@ -53,7 +53,7 @@ export async function moqPools() {
     JOIN products p ON p.id = i.product_id
     LEFT JOIN lgas g ON g.id = l.lga_id
     LEFT JOIN states s ON s.code = l.state_code
-    WHERE l.status = 'submitted' AND l.would_buy_at_price
+    WHERE l.status = 'submitted' AND l.superseded_at IS NULL AND l.would_buy_at_price
     GROUP BY place, p.id, p.name, p.unit_label
     HAVING COUNT(DISTINCT l.id) > 1
     ORDER BY total_quantity DESC
@@ -71,7 +71,7 @@ export async function demandByState() {
            ROUND(100.0 * COUNT(*) / NULLIF(SUM(COUNT(*)) OVER (), 0), 1)::float AS share
     FROM demand_lists l
     JOIN states s ON s.code = l.state_code
-    WHERE l.status = 'submitted'
+    WHERE l.status = 'submitted' AND l.superseded_at IS NULL
     GROUP BY s.name
     ORDER BY lists DESC
   `);
@@ -93,8 +93,8 @@ export async function funnel() {
       COUNT(*) FILTER (WHERE first_item_at IS NOT NULL)::int AS added_item,
       (SELECT COUNT(DISTINCT list_id) FROM events WHERE type = 'reached_submit')::int
         AS reached_submit,
-      COUNT(*) FILTER (WHERE status = 'submitted')::int AS submitted,
-      COUNT(*) FILTER (WHERE would_buy_at_price)::int AS committed
+      COUNT(*) FILTER (WHERE status = 'submitted' AND superseded_at IS NULL)::int AS submitted,
+      COUNT(*) FILTER (WHERE would_buy_at_price AND superseded_at IS NULL)::int AS committed
     FROM demand_lists
   `);
   return rows[0];
@@ -108,7 +108,7 @@ export async function bySegment() {
            COUNT(*)::int AS lists,
            COUNT(*) FILTER (WHERE would_buy_at_price)::int AS committed
     FROM demand_lists
-    WHERE status = 'submitted' AND participant_type IS NOT NULL
+    WHERE status = 'submitted' AND superseded_at IS NULL AND participant_type IS NOT NULL
     GROUP BY participant_type
     ORDER BY lists DESC
   `);

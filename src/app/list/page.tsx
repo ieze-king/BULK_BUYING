@@ -4,11 +4,12 @@ import { db } from "@/db";
 import { demandListItems, demandLists, events, lgas, products, states } from "@/db/schema";
 import { getAnonId } from "@/lib/session";
 import { LAGOS_CODE } from "@/lib/naija";
-import { SubmitForm } from "./submit-form";
+import { SiteHeader } from "@/components/site-header";
+import { ListForm } from "./list-form";
 
 export const dynamic = "force-dynamic";
 
-export default async function SubmitPage() {
+export default async function ListPage() {
   const anonId = await getAnonId();
 
   const list = anonId
@@ -25,10 +26,12 @@ export default async function SubmitPage() {
     ? await db
         .select({
           id: demandListItems.id,
+          productId: demandListItems.productId,
           quantity: demandListItems.quantity,
           unitLabel: demandListItems.unitLabel,
           indicativePriceNgn: demandListItems.indicativePriceNgn,
           name: products.name,
+          category: products.category,
         })
         .from(demandListItems)
         .innerJoin(products, eq(demandListItems.productId, products.id))
@@ -38,16 +41,25 @@ export default async function SubmitPage() {
 
   if (!list || items.length === 0) {
     return (
-      <main className="flex-1 px-4 py-16 max-w-2xl mx-auto">
-        <h1 className="text-2xl font-semibold">Your list is empty</h1>
-        <p className="mt-2 text-muted">Pick a few items and we will take it from there.</p>
-        <Link
-          href="/"
-          className="mt-6 inline-flex h-12 items-center rounded-xl bg-accent px-6 font-semibold text-accent-contrast"
-        >
-          Choose items
-        </Link>
-      </main>
+      <>
+        <SiteHeader />
+        <main className="flex-1 px-4 py-20">
+          <div className="mx-auto max-w-md text-center">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Your list is empty
+            </h1>
+            <p className="mt-2 text-muted">
+              Add what you want to buy in bulk and it will show up here.
+            </p>
+            <Link
+              href="/"
+              className="mt-6 inline-flex h-12 items-center rounded-xl bg-accent px-6 font-semibold text-accent-contrast"
+            >
+              Browse products
+            </Link>
+          </div>
+        </main>
+      </>
     );
   }
 
@@ -66,29 +78,26 @@ export default async function SubmitPage() {
     db.select().from(lgas).where(eq(lgas.stateCode, LAGOS_CODE)).orderBy(asc(lgas.name)),
   ]);
 
-  const estimate = items.reduce(
-    (sum, i) => sum + (i.indicativePriceNgn ?? 0) * i.quantity,
-    0,
-  );
-
   return (
-    <main className="flex-1 px-4 py-8 max-w-2xl mx-auto">
-      <Link href="/" className="text-sm text-muted underline underline-offset-4">
-        &larr; Change my items
-      </Link>
+    <>
+      <SiteHeader />
+      <main className="flex-1 px-4 pb-16">
+        <div className="mx-auto max-w-2xl">
+          <div className="pt-8 pb-6">
+            <Link href="/" className="text-sm text-muted underline underline-offset-4">
+              &larr; Add more items
+            </Link>
+            <h1 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+              Your bulk-buying list
+            </h1>
+            <p className="mt-2 text-muted">
+              Check the quantities, tell us where you are, and we will save it.
+            </p>
+          </div>
 
-      <h1 className="mt-4 text-2xl font-semibold tracking-tight">Almost done</h1>
-      <p className="mt-2 text-muted">
-        We only need to know where you are and how to reach you when your items reach
-        bulk quantity.
-      </p>
-
-      <SubmitForm
-        items={items}
-        estimate={estimate}
-        states={allStates}
-        lagosLgas={lagosLgas}
-      />
-    </main>
+          <ListForm items={items} states={allStates} lagosLgas={lagosLgas} />
+        </div>
+      </main>
+    </>
   );
 }
