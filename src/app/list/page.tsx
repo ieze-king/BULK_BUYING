@@ -35,7 +35,7 @@ export default async function ListPage() {
         .from(demandListItems)
         .innerJoin(products, eq(demandListItems.productId, products.id))
         .where(eq(demandListItems.listId, list.id))
-        .orderBy(asc(products.sortOrder))
+        .orderBy(asc(products.name))
     : [];
 
   if (!list || items.length === 0) {

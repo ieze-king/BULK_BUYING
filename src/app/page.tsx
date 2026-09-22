@@ -24,7 +24,7 @@ export default async function Home() {
     })
     .from(products)
     .where(eq(products.active, true))
-    .orderBy(asc(products.sortOrder), asc(products.name));
+    .orderBy(asc(products.name));
 
   const categories = CATEGORY_ORDER.filter((c) => rows.some((r) => r.category === c));
   const { byProduct, totalPeople } = await getInterestCounts();

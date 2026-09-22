@@ -311,7 +311,7 @@ export function DemandBuilder({
                     </button>
                   )}
                 </div>
-                <div className="no-scrollbar -mx-4 flex gap-1 overflow-x-auto px-4">
+                <div className="no-scrollbar -mx-4 flex gap-1 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:overflow-x-visible sm:px-0">
                   {LETTERS.map((letter) => {
                     const enabled = availableLetters.has(letter);
                     return (
