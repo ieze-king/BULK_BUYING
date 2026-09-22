@@ -14,7 +14,7 @@ export type Product = {
 };
 
 /**
- * Compact by design: people may scroll past a hundred of these, so the row
+ * Compact by design: people may scroll past many of these, so the row
  * stays one line of content plus its control. No price, because while browsing a
  * naira figure reads as our offer, and we are measuring demand, not selling.
  */

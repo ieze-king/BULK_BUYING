@@ -18,39 +18,38 @@ function toCsv(rows: Row[]): string {
   ].join("\n");
 }
 
-/** One row per (submission, item): the shape you want in a spreadsheet. */
+/** One row per person per pool: the shape you want in a spreadsheet. */
 export async function GET() {
   if (!(await isAdmin())) {
     return new Response("Unauthorized", { status: 401 });
   }
 
   const { rows } = await db.execute<Row>(sql`
-    SELECT l.id AS list_id,
-           l.submitted_at,
-           l.contact_name,
-           l.phone_normalized AS phone,
-           l.participant_type,
-           s.name AS state,
-           g.name AS lga,
-           l.area,
-           l.interested,
+    SELECT pl.slug AS pool,
            p.name AS product,
-           i.quantity,
-           i.unit_label
-    FROM demand_lists l
-    JOIN demand_list_items i ON i.list_id = l.id
-    JOIN products p ON p.id = i.product_id
-    LEFT JOIN states s ON s.code = l.state_code
-    LEFT JOIN lgas g ON g.id = l.lga_id
-    WHERE l.status = 'submitted' AND l.superseded_at IS NULL
-    ORDER BY l.submitted_at DESC, p.name
+           COALESCE(g.name, pl.area_label, s.name) AS place,
+           s.name AS state,
+           m.quantity,
+           p.unit_label,
+           m.interested,
+           pe.name AS contact_name,
+           pe.phone_normalized AS phone,
+           pe.participant_type,
+           m.joined_at
+    FROM pool_members m
+    JOIN pools pl ON pl.id = m.pool_id
+    JOIN people pe ON pe.id = m.person_id
+    JOIN products p ON p.id = pl.product_id
+    JOIN states s ON s.code = pl.state_code
+    LEFT JOIN lgas g ON g.id = pl.lga_id
+    ORDER BY m.joined_at DESC
   `);
 
   const date = new Date().toISOString().slice(0, 10);
   return new Response(toCsv(rows as Row[]), {
     headers: {
       "content-type": "text/csv; charset=utf-8",
-      "content-disposition": `attachment; filename="bulk-demand-${date}.csv"`,
+      "content-disposition": `attachment; filename="bulk-pools-${date}.csv"`,
     },
   });
 }

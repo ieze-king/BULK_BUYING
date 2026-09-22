@@ -1,12 +1,10 @@
 import { isAdmin } from "@/lib/admin";
 import { LoginForm } from "./login-form";
 import {
-  bySegment,
   catalogueGaps,
-  demandByState,
-  funnel,
-  moqPools,
-  productDemand,
+  poolTable,
+  poolTotals,
+  poolsByPlace,
 } from "./queries";
 
 export const dynamic = "force-dynamic";
@@ -63,19 +61,17 @@ export default async function AdminPage() {
     );
   }
 
-  const [f, demand, pools, byState, segments, gaps] = await Promise.all([
-    funnel(),
-    productDemand(),
-    moqPools(),
-    demandByState(),
-    bySegment(),
+  const [totals, table, places, gaps] = await Promise.all([
+    poolTotals(),
+    poolTable(),
+    poolsByPlace(),
     catalogueGaps(),
   ]);
 
-  const interestRate =
-    f.submitted > 0 ? `${Math.round((100 * f.interested) / f.submitted)}%` : "None yet";
-  const completion =
-    f.added_item > 0 ? `${Math.round((100 * f.submitted) / f.added_item)}%` : "None yet";
+  const readyRate =
+    totals.members > 0
+      ? `${Math.round((100 * totals.ready) / totals.members)}%`
+      : "None yet";
 
   return (
     <main className="flex-1 px-4 py-8 max-w-5xl mx-auto space-y-10">
@@ -87,67 +83,37 @@ export default async function AdminPage() {
       </div>
 
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Stat label="Lists submitted" value={String(f.submitted)} />
-        <Stat
-          label="Ready to buy"
-          value={interestRate}
-          sub={`${f.interested} of ${f.submitted}`}
-        />
-        <Stat
-          label="Started → submitted"
-          value={completion}
-          sub={`${f.added_item} added an item`}
-        />
-        <Stat label="Visitors" value={String(f.started)} />
+        <Stat label="Pools" value={String(totals.pools)} />
+        <Stat label="People" value={String(totals.people)} sub={`${totals.members} memberships`} />
+        <Stat label="Ready to buy" value={readyRate} sub={`${totals.ready} of ${totals.members}`} />
+        <Stat label="Joined this week" value={String(totals.joined_this_week)} />
       </section>
 
       <section>
-        <h2 className="font-medium mb-3">Bulk pools worth chasing</h2>
+        <h2 className="font-medium mb-3">Pools</h2>
         <p className="text-sm text-muted mb-3">
-          People who said they are ready to buy, grouped by place and item, two or
-          more of them.
+          One pool per item per place, so each row is a negotiable quantity.
         </p>
         <Table
-          headers={["Place", "Item", "Quantity", "People"]}
-          rows={pools.map((p) => [
-            p.place ?? "Unknown",
-            p.name,
-            `${p.total_quantity} ${p.unit_label}s`,
-            p.buyers,
+          headers={["Item", "Place", "Quantity", "People", "Ready", "This week"]}
+          rows={table.map((r) => [
+            r.product,
+            r.place ?? "Unknown",
+            `${r.total_quantity} ${r.unit_label}s`,
+            r.people_count,
+            r.ready_count,
+            r.joined_this_week,
           ])}
         />
       </section>
 
       <section>
-        <h2 className="font-medium mb-3">Demand by product</h2>
+        <h2 className="font-medium mb-3">Where demand is</h2>
         <Table
-          headers={["Item", "Requested", "Ready to buy", "People"]}
-          rows={demand.map((d) => [
-            d.name,
-            `${d.total_quantity} ${d.unit_label}s`,
-            `${d.interested_quantity} ${d.unit_label}s`,
-            d.buyers,
-          ])}
+          headers={["Place", "Pools", "People", "Total quantity"]}
+          rows={places.map((p) => [p.place ?? "Unknown", p.pools, p.people, p.quantity])}
         />
       </section>
-
-      <div className="grid md:grid-cols-2 gap-8">
-        <section>
-          <h2 className="font-medium mb-3">Where demand is coming from</h2>
-          <Table
-            headers={["State", "Lists", "Share"]}
-            rows={byState.map((s) => [s.name, s.lists, `${s.share}%`])}
-          />
-        </section>
-
-        <section>
-          <h2 className="font-medium mb-3">Who is asking</h2>
-          <Table
-            headers={["Type", "Lists", "Ready to buy"]}
-            rows={segments.map((s) => [s.participant_type, s.lists, s.interested])}
-          />
-        </section>
-      </div>
 
       <section>
         <h2 className="font-medium mb-3">Add these next</h2>

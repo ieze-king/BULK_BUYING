@@ -7,12 +7,10 @@ export const MAX_ITEMS = 25;
 
 export const quantitySchema = z.coerce.number().int().min(0).max(MAX_QUANTITY);
 
-export const participantTypeSchema = z.enum([
-  "household",
-  "business",
-  "retail",
-  "other",
-]);
+export const participantTypeSchema = z.enum(
+  ["household", "business", "retail", "other"],
+  { message: "Tell us who you are buying for" },
+);
 
 /** Browsers submit present-but-empty fields as ""; treat that as absent. */
 const emptyToUndefined = <T extends z.ZodTypeAny>(schema: T) =>
