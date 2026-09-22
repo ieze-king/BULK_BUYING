@@ -5,7 +5,14 @@
   Colour is used structurally here, not decoratively: every category owns a
   hue, and that hue follows the category across pills, cards and headings.
 */
+/*
+  Light only, on purpose. The brief is bright, and honouring a dark system
+  preference turned the whole palette into murky brown. color-scheme keeps
+  form controls light even when the OS is dark.
+*/
 :root {
+  color-scheme: light;
+
   --background: #fff8ed;
   --surface: #ffffff;
   --surface-raised: #fdf0dd;
@@ -28,33 +35,6 @@
   --shadow: 0 2px 0 0 var(--border-strong);
   --shadow-pop: 4px 4px 0 0 var(--foreground);
   --shadow-soft: 0 10px 30px -12px rgb(28 19 5 / 0.25);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #16120b;
-    --surface: #211a11;
-    --surface-raised: #2c2216;
-    --foreground: #fdf4e6;
-    --muted: #b49f81;
-    --border: #3a2e1e;
-    --border-strong: #4d3d28;
-
-    --accent: #2fd484;
-    --accent-hover: #55e29b;
-    --accent-contrast: #05200f;
-    --accent-soft: #14301f;
-
-    --marigold: #ffc051;
-    --coral: #ff7d5e;
-    --indigo: #8a7dff;
-    --sky: #4fc3f0;
-    --plum: #f068b4;
-
-    --shadow: 0 2px 0 0 var(--border-strong);
-    --shadow-pop: 4px 4px 0 0 var(--border-strong);
-    --shadow-soft: 0 10px 30px -12px rgb(0 0 0 / 0.6);
-  }
 }
 
 @theme inline {
@@ -118,11 +98,11 @@ textarea {
   height: 760px;
   z-index: -2;
   background:
-    radial-gradient(38% 44% at 12% 18%, color-mix(in oklab, var(--marigold) 55%, transparent), transparent 68%),
-    radial-gradient(34% 40% at 82% 8%, color-mix(in oklab, var(--accent) 48%, transparent), transparent 66%),
-    radial-gradient(30% 36% at 62% 46%, color-mix(in oklab, var(--coral) 38%, transparent), transparent 64%),
-    radial-gradient(34% 38% at 30% 62%, color-mix(in oklab, var(--sky) 32%, transparent), transparent 66%);
-  filter: blur(8px);
+    radial-gradient(42% 50% at 10% 12%, color-mix(in oklab, var(--marigold) 85%, transparent), transparent 70%),
+    radial-gradient(40% 46% at 86% 4%, color-mix(in oklab, var(--accent) 70%, transparent), transparent 68%),
+    radial-gradient(36% 42% at 66% 44%, color-mix(in oklab, var(--coral) 62%, transparent), transparent 66%),
+    radial-gradient(38% 44% at 26% 66%, color-mix(in oklab, var(--sky) 52%, transparent), transparent 68%);
+  filter: blur(4px);
   animation: drift 26s ease-in-out infinite alternate;
   pointer-events: none;
 }

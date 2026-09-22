@@ -318,10 +318,10 @@ export function DemandBuilder({
                         type="button"
                         disabled={!enabled}
                         onClick={() => jumpToLetter(letter)}
-                        className={`size-9 shrink-0 rounded-xl text-sm font-bold transition-all ${
+                        className={`size-9 shrink-0 rounded-lg text-sm font-bold transition-colors ${
                           enabled
-                            ? "border-2 border-foreground/15 bg-surface hover:-translate-y-0.5 hover:border-foreground hover:bg-marigold"
-                            : "cursor-default text-muted/35"
+                            ? "hover:bg-marigold"
+                            : "cursor-default text-muted/30"
                         }`}
                       >
                         {letter}

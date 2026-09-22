@@ -235,8 +235,8 @@ export function Landing({
             {AUDIENCES.map((a) => (
               <div
                 key={a.title}
-                className="rounded-3xl border-2 border-foreground/12 p-5 transition-transform hover:-translate-y-1"
-                style={{ background: `color-mix(in oklab, ${a.hue} 16%, var(--surface))` }}
+                className="pop rounded-3xl p-5 transition-transform hover:-translate-y-1"
+                style={{ background: `color-mix(in oklab, ${a.hue} 38%, #ffffff)` }}
               >
                 <span
                   className="block size-5 rounded-lg border-2 border-foreground"

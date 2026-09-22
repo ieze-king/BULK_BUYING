@@ -16,7 +16,7 @@ export function LoginForm() {
         className="w-full h-12 px-3 rounded-xl border border-border bg-surface"
       />
       {state.error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm text-red-600">
           {state.error}
         </p>
       )}

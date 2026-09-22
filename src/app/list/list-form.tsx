@@ -46,7 +46,7 @@ function Field({
       {children}
       {hint && !error && <p className="mt-1 text-sm text-muted">{hint}</p>}
       {error && (
-        <p role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="mt-1 text-sm text-red-600">
           {error}
         </p>
       )}
@@ -237,7 +237,7 @@ export function ListForm({
           ))}
         </div>
         {errors.participantType && (
-          <p role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400">
+          <p role="alert" className="mt-2 text-sm text-red-600">
             {errors.participantType}
           </p>
         )}
@@ -285,7 +285,7 @@ export function ListForm({
           ))}
         </div>
         {errors.interested && (
-          <p role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400">
+          <p role="alert" className="mt-2 text-sm text-red-600">
             {errors.interested}
           </p>
         )}
@@ -345,7 +345,7 @@ export function ListForm({
             </span>
           </label>
           {errors.consent && (
-            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+            <p role="alert" className="text-sm text-red-600">
               {errors.consent}
             </p>
           )}
@@ -359,7 +359,7 @@ export function ListForm({
       </div>
 
       {state.formError && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm text-red-600">
           {state.formError}
         </p>
       )}
