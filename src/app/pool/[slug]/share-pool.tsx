@@ -4,17 +4,17 @@ import { useState } from "react";
 
 /** The whole growth mechanism: one tap to put this pool in a WhatsApp group. */
 export function SharePool({
-  slug,
+  url,
   product,
   place,
 }: {
-  slug: string;
+  /** Absolute, resolved on the server so the link is whole before hydration. */
+  url: string;
   product: string;
   place: string;
 }) {
   const [copied, setCopied] = useState(false);
 
-  const url = typeof window === "undefined" ? "" : `${window.location.origin}/pool/${slug}`;
   const text = `I am putting together a bulk order for ${product} in ${place}. The more of us who join, the better the price. Add how many you want:`;
 
   async function copy() {

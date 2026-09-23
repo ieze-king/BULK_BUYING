@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { categoryHue, categoryTint } from "@/lib/category-style";
@@ -26,6 +27,15 @@ export default async function PoolPage({
   if (!pool) notFound();
 
   const members = await getMembers(slug);
+
+  // Built on the server so the share link is complete in the very first HTML.
+  // Deriving it from window.location would leave it empty until hydration, and
+  // a tap before then sends a message with no link, which silently breaks the
+  // one mechanism this whole thing grows by.
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "";
+  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+  const shareUrl = `${proto}://${host}/pool/${slug}`;
   const justJoined = sp.joined === "1";
   const justCreated = sp.new === "1";
   const hue = categoryHue(pool.category);
@@ -102,7 +112,7 @@ export default async function PoolPage({
             can negotiate for everyone in it.
           </p>
 
-          <SharePool slug={slug} product={pool.product} place={pool.place} />
+          <SharePool url={shareUrl} product={pool.product} place={pool.place} />
 
           <JoinForm slug={slug} product={pool.product} unitLabel={pool.unit_label} />
 
