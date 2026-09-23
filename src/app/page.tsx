@@ -34,7 +34,7 @@ export default async function Home() {
           <div className="mx-auto max-w-6xl px-4 pt-12 pb-10 text-center sm:pt-16">
             <p className="rise inline-flex items-center gap-2 rounded-full border-2 border-foreground/15 bg-surface px-4 py-1.5 text-sm font-bold">
               <span className="size-2 rounded-full" style={{ background: "var(--coral)" }} />
-              Bulk buying, together &middot; Lagos first
+              Bulk buying, together
             </p>
 
             <h1
