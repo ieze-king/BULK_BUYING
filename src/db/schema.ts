@@ -112,6 +112,34 @@ export const pools = pgTable(
     /** Free-text area for states where we do not carry LGAs. */
     areaLabel: text("area_label"),
     startedBy: integer("started_by").references(() => people.id),
+
+    /**
+     * Private pools are link-only and never appear in the public field. This is
+     * the default: most group buying happens inside an existing circle, and the
+     * group fulfils the order itself, so a stranger joining is a real intrusion
+     * rather than a welcome addition.
+     */
+    visibility: text("visibility", { enum: ["private", "public"] })
+      .notNull()
+      .default("private"),
+
+    /**
+     * What the creator is aiming for. Their stated aim, never a claim about any
+     * supplier's terms. Reaching it starts the closing window; it is not a
+     * ceiling, and a pool can and should exceed it.
+     */
+    goalQuantity: integer("goal_quantity").notNull(),
+    goalReachedAt: timestamp("goal_reached_at", { withTimezone: true }),
+    /** goalReachedAt + 48h, unless the creator closes early. */
+    closesAt: timestamp("closes_at", { withTimezone: true }),
+    /** Membership and quantity are locked from here. Coordination continues. */
+    closedAt: timestamp("closed_at", { withTimezone: true }),
+
+    /** The member the group chose to coordinate. Never "verified" by us. */
+    coordinatorId: integer("coordinator_id"),
+    /** One link, pinned, creator-only: a WhatsApp group, a Meet, whatever. */
+    coordinationLink: text("coordination_link"),
+
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
@@ -134,6 +162,8 @@ export const poolMembers = pgTable(
     quantity: integer("quantity").notNull(),
     /** True when they said they are ready to buy, not just exploring. */
     interested: boolean("interested").notNull().default(false),
+    /** Set when this member agrees to the chosen coordinator. */
+    confirmedCoordinatorAt: timestamp("confirmed_coordinator_at", { withTimezone: true }),
     joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -141,4 +171,28 @@ export const poolMembers = pgTable(
     uniqueIndex("pool_members_pool_person_idx").on(t.poolId, t.personId),
     index("pool_members_joined_idx").on(t.joinedAt),
   ],
+);
+
+/**
+ * The coordination thread. Members only, because the point is for a group to
+ * organise itself: agree who sources quotes, where to meet, how to pay.
+ *
+ * Contact details are deliberately never exposed by the platform. Someone
+ * posts a link when the group is ready, and only the creator can pin the
+ * official one, so a stranger cannot drop a plausible-looking group invite.
+ */
+export const poolComments = pgTable(
+  "pool_comments",
+  {
+    id: serial("id").primaryKey(),
+    poolId: integer("pool_id")
+      .notNull()
+      .references(() => pools.id, { onDelete: "cascade" }),
+    personId: integer("person_id")
+      .notNull()
+      .references(() => people.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("pool_comments_pool_idx").on(t.poolId, t.createdAt)],
 );

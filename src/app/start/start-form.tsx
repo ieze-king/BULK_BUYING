@@ -187,9 +187,62 @@ export function StartForm({
         <FieldError message={errors.quantity} />
       </section>
 
-      {/* 3. Where */}
+      {/* 3. Goal and who can join */}
       <section className="pop rounded-3xl bg-surface p-5 sm:p-6">
-        <h2 className="font-display text-xl font-black">3. Where are you?</h2>
+        <h2 className="font-display text-xl font-black">3. What is the goal?</h2>
+        <p className="mt-1 text-sm text-muted">
+          How many {picked ? `${picked.unitLabel}s` : "units"} you want the whole group
+          to reach. Not a limit: the pool can go past it. Reaching it starts a
+          48 hour window before the group closes.
+        </p>
+        <input
+          name="goalQuantity"
+          type="number"
+          inputMode="numeric"
+          min={1}
+          placeholder={picked ? `e.g. 100 ${picked.unitLabel}s` : "e.g. 100"}
+          className={`${inputClass} mt-4`}
+        />
+        <FieldError message={errors.goalQuantity} />
+
+        <h3 className="mt-6 font-bold">Who can join?</h3>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          {[
+            {
+              v: "private",
+              l: "Only people I invite",
+              h: "Link only. Never listed publicly.",
+            },
+            {
+              v: "public",
+              l: "Anyone nearby",
+              h: "Listed so strangers can join and grow it faster.",
+            },
+          ].map((o) => (
+            <label
+              key={o.v}
+              className="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-foreground/15 p-3.5 transition-transform hover:-translate-y-0.5 has-checked:border-foreground has-checked:bg-accent-soft"
+            >
+              <input
+                type="radio"
+                name="visibility"
+                value={o.v}
+                defaultChecked={o.v === "private"}
+                className="mt-1 size-4 shrink-0 accent-[var(--accent)]"
+              />
+              <span>
+                <span className="block font-semibold">{o.l}</span>
+                <span className="block text-sm text-muted">{o.h}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+        <FieldError message={errors.visibility} />
+      </section>
+
+      {/* 4. Where */}
+      <section className="pop rounded-3xl bg-surface p-5 sm:p-6">
+        <h2 className="font-display text-xl font-black">4. Where are you?</h2>
         <p className="mt-1 text-sm text-muted">
           Pools are local, because the order has to be delivered somewhere.
         </p>
@@ -237,7 +290,7 @@ export function StartForm({
 
       {/* 4. You */}
       <section className="pop rounded-3xl bg-surface p-5 sm:p-6">
-        <h2 className="font-display text-xl font-black">4. About you</h2>
+        <h2 className="font-display text-xl font-black">5. About you</h2>
         <div className="mt-4 space-y-5">
           <JoinFields errors={errors} />
         </div>
