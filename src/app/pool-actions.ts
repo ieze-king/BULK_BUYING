@@ -18,10 +18,31 @@ import { poolComments, poolMembers, pools } from "@/db/schema";
 import { MAX_QUANTITY, participantTypeSchema } from "@/lib/validation";
 import { normalizeNgPhone } from "@/lib/phone";
 
-export type PoolFormState = { errors?: Record<string, string>; formError?: string };
+export type PoolFormState = {
+  errors?: Record<string, string>;
+  formError?: string;
+  /**
+   * What the person typed, echoed back.
+   *
+   * React resets a form once its action completes, so without this a single
+   * missed field wipes everything and they start over. On a phone, over a slow
+   * connection, that is where people give up.
+   */
+  values?: Record<string, string>;
+};
+
+/** Everything the person typed, minus React's own action plumbing. */
+function submitted(formData: FormData): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, v] of formData.entries()) {
+    if (k.startsWith("$") || typeof v !== "string") continue;
+    out[k] = v;
+  }
+  return out;
+}
 
 const placeSchema = {
-  stateCode: z.string().trim().min(2, "Choose your state"),
+  stateCode: z.string({ message: "Choose your state" }).trim().min(2, "Choose your state"),
   lgaId: z.preprocess((v) => (v === "" || v == null ? undefined : v),
     z.coerce.number().int().positive().optional()),
   area: z.preprocess((v) => (v === "" || v == null ? undefined : v),
@@ -35,8 +56,14 @@ const quantitySchema = z.coerce
   .max(MAX_QUANTITY);
 
 const contactSchema = {
-  name: z.string().trim().min(2, "Please enter your name").max(80),
-  phone: z.string().trim().transform((v, ctx) => {
+  name: z
+    .string({ message: "Please enter your name" })
+    .trim()
+    .min(2, "Please enter your name")
+    .max(80),
+  // A message on the type too, not only the rule: a field left out entirely
+  // fails the type check, and Zod's default for that reads like a stack trace.
+  phone: z.string({ message: "Enter your phone number" }).trim().transform((v, ctx) => {
     const n = normalizeNgPhone(v);
     if (!n) {
       ctx.addIssue({ code: "custom", message: "Enter a valid Nigerian mobile, e.g. 0803 123 4567" });
@@ -50,7 +77,11 @@ const contactSchema = {
 };
 
 const startSchema = z.object({
-  productId: z.coerce.number().int().positive({ message: "Choose an item" }),
+  // An empty hidden field coerces to NaN, so the message goes on the coercion.
+  productId: z.coerce
+    .number({ message: "Choose an item" })
+    .int({ message: "Choose an item" })
+    .positive({ message: "Choose an item" }),
   quantity: quantitySchema,
   goalQuantity: z.coerce
     .number({ message: "Set a goal" })
@@ -58,6 +89,8 @@ const startSchema = z.object({
     .min(1, "Set a goal of at least 1")
     .max(100000),
   visibility: z.enum(["private", "public"], { message: "Choose who can join" }),
+  spec: z.preprocess((v) => (v === "" || v == null ? undefined : v),
+    z.string().trim().max(120).optional()),
   ...placeSchema,
   ...contactSchema,
 });
@@ -102,7 +135,9 @@ export async function startPool(
   if (String(formData.get("website") ?? "").length > 0) redirect("/");
 
   const parsed = startSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { errors: fieldErrors(parsed.error) };
+  if (!parsed.success) {
+    return { errors: fieldErrors(parsed.error), values: submitted(formData) };
+  }
   const d = parsed.data;
 
   const anonId = await ensureAnonId();
@@ -116,6 +151,7 @@ export async function startPool(
     startedBy: person.id,
     goalQuantity: d.goalQuantity,
     visibility: d.visibility,
+    spec: d.spec ?? null,
   });
 
   await joinPool(pool.id, person.id, d.quantity, d.interested === "ready");
@@ -132,7 +168,9 @@ export async function joinExistingPool(
   if (String(formData.get("website") ?? "").length > 0) redirect("/");
 
   const parsed = joinSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { errors: fieldErrors(parsed.error) };
+  if (!parsed.success) {
+    return { errors: fieldErrors(parsed.error), values: submitted(formData) };
+  }
   const d = parsed.data;
 
   const anonId = await ensureAnonId();

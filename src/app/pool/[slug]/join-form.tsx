@@ -70,7 +70,7 @@ export function JoinForm({
       </div>
 
       <div className="mt-5 space-y-5">
-        <JoinFields errors={errors} />
+        <JoinFields errors={errors} values={state.values} />
       </div>
 
       {state.formError && (

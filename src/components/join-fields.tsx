@@ -24,14 +24,27 @@ export function FieldError({ message }: { message?: string }) {
  * the whole cost of participating, so it stays as small as it can be while
  * still producing a callable contact and a usable interest signal.
  */
-export function JoinFields({ errors }: { errors: Record<string, string> }) {
+export function JoinFields({
+  errors,
+  values = {},
+}: {
+  errors: Record<string, string>;
+  /** Echoed back after a failed submit, so nothing typed is lost. */
+  values?: Record<string, string>;
+}) {
   return (
     <>
       <div>
         <label htmlFor="name" className="mb-1.5 block font-bold">
           Your name
         </label>
-        <input id="name" name="name" autoComplete="name" className={inputClass} />
+        <input
+          id="name"
+          name="name"
+          autoComplete="name"
+          defaultValue={values.name ?? ""}
+          className={inputClass}
+        />
         <FieldError message={errors.name} />
       </div>
 
@@ -46,6 +59,7 @@ export function JoinFields({ errors }: { errors: Record<string, string> }) {
           inputMode="tel"
           autoComplete="tel"
           placeholder="0803 123 4567"
+          defaultValue={values.phone ?? ""}
           className={inputClass}
         />
         <p className="mt-1 text-sm text-muted">
@@ -62,7 +76,13 @@ export function JoinFields({ errors }: { errors: Record<string, string> }) {
               key={w.value}
               className="cursor-pointer rounded-full border-2 border-foreground/20 px-4 py-2 font-semibold transition-transform hover:-translate-y-0.5 has-checked:border-foreground has-checked:bg-marigold"
             >
-              <input type="radio" name="participantType" value={w.value} className="sr-only" />
+              <input
+                type="radio"
+                name="participantType"
+                value={w.value}
+                defaultChecked={values.participantType === w.value}
+                className="sr-only"
+              />
               {w.label}
             </label>
           ))}
@@ -81,7 +101,13 @@ export function JoinFields({ errors }: { errors: Record<string, string> }) {
               key={o.v}
               className="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-foreground/15 p-3.5 transition-transform hover:-translate-y-0.5 has-checked:border-foreground has-checked:bg-accent-soft"
             >
-              <input type="radio" name="interested" value={o.v} className="mt-1 size-4 shrink-0 accent-[var(--accent)]" />
+              <input
+                type="radio"
+                name="interested"
+                value={o.v}
+                defaultChecked={values.interested === o.v}
+                className="mt-1 size-4 shrink-0 accent-[var(--accent)]"
+              />
               <span>
                 <span className="block font-semibold">{o.l}</span>
                 <span className="block text-sm text-muted">{o.h}</span>
@@ -93,7 +119,12 @@ export function JoinFields({ errors }: { errors: Record<string, string> }) {
       </fieldset>
 
       <label className="flex items-start gap-3 text-sm">
-        <input type="checkbox" name="consent" className="mt-1 size-4 shrink-0" />
+        <input
+          type="checkbox"
+          name="consent"
+          defaultChecked={values.consent === "on"}
+          className="mt-1 size-4 shrink-0"
+        />
         <span className="text-muted">
           I agree that my name, number and location can be stored and used to contact me
           about this bulk purchase.

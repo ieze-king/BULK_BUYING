@@ -23,6 +23,7 @@ export type PoolSummary = {
   closed_at: string | null;
   coordinator_id: number | null;
   coordination_link: string | null;
+  spec: string | null;
   started_by: number | null;
   total_quantity: number;
   people_count: number;
@@ -56,6 +57,7 @@ const SUMMARY_SELECT = sql`
          pl.closed_at,
          pl.coordinator_id,
          pl.coordination_link,
+         pl.spec,
          pl.started_by,
          p.name AS product,
          p.unit_label,
@@ -135,6 +137,7 @@ export async function findOrCreatePool(input: {
   startedBy: number | null;
   goalQuantity: number;
   visibility: "private" | "public";
+  spec: string | null;
 }) {
   if (input.visibility === "private") {
     const made = await db

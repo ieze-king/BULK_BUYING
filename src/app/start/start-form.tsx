@@ -5,7 +5,6 @@ import { startPool, type PoolFormState } from "@/app/pool-actions";
 import { FieldError, JoinFields, inputClass } from "@/components/join-fields";
 import { MissingProduct } from "@/components/missing-product";
 import { categoryTint } from "@/lib/category-style";
-import { LAGOS_CODE } from "@/lib/naija";
 
 type Item = {
   id: number;
@@ -21,13 +20,13 @@ export function StartForm({
   products,
   categories,
   states,
-  lagosLgas,
+  lgas,
   preselectId,
 }: {
   products: Item[];
   categories: string[];
   states: { code: string; name: string }[];
-  lagosLgas: { id: number; name: string }[];
+  lgas: { id: number; stateCode: string; name: string }[];
   /** Set when arriving from a starter bubble, so step one is already done. */
   preselectId?: number | null;
 }) {
@@ -41,7 +40,18 @@ export function StartForm({
   );
   const [category, setCategory] = useState<string | null>(null);
   const [quantity, setQuantity] = useState("");
+  const [goal, setGoal] = useState("");
+  const [visibility, setVisibility] = useState("private");
   const [stateCode, setStateCode] = useState("");
+  const [lgaId, setLgaId] = useState("");
+  const [area, setArea] = useState("");
+  const [spec, setSpec] = useState("");
+  // Every state has its LGAs now, so the fallback free-text box is only for a
+  // state we somehow have no rows for.
+  const stateLgas = useMemo(
+    () => lgas.filter((l) => l.stateCode === stateCode),
+    [lgas, stateCode],
+  );
   const errors = state.errors ?? {};
 
   const results = useMemo(() => {
@@ -150,6 +160,27 @@ export function StartForm({
             )}
           </>
         )}
+        {picked && (
+          <div className="mt-4">
+            <label htmlFor="spec" className="block font-bold">
+              Any particular brand or type?{" "}
+              <span className="font-normal text-muted">Optional</span>
+            </label>
+            <p className="mt-1 text-sm text-muted">
+              Your group has to buy one thing, so say which if it matters. Leave it
+              blank and let the group decide together.
+            </p>
+            <input
+              id="spec"
+              name="spec"
+              value={spec}
+              onChange={(e) => setSpec(e.target.value)}
+              placeholder="e.g. Mama Gold, parboiled, long grain"
+              className={`${inputClass} mt-2`}
+            />
+            <FieldError message={errors.spec} />
+          </div>
+        )}
         <input type="hidden" name="productId" value={picked?.id ?? ""} />
         <FieldError message={errors.productId} />
       </section>
@@ -200,6 +231,8 @@ export function StartForm({
           type="number"
           inputMode="numeric"
           min={1}
+          value={goal}
+          onChange={(e) => setGoal(e.target.value)}
           placeholder={picked ? `e.g. 100 ${picked.unitLabel}s` : "e.g. 100"}
           className={`${inputClass} mt-4`}
         />
@@ -227,7 +260,8 @@ export function StartForm({
                 type="radio"
                 name="visibility"
                 value={o.v}
-                defaultChecked={o.v === "private"}
+                checked={visibility === o.v}
+                onChange={() => setVisibility(o.v)}
                 className="mt-1 size-4 shrink-0 accent-[var(--accent)]"
               />
               <span>
@@ -248,8 +282,11 @@ export function StartForm({
         </p>
         <select
           name="stateCode"
-          defaultValue=""
-          onChange={(e) => setStateCode(e.target.value)}
+          value={stateCode}
+          onChange={(e) => {
+            setStateCode(e.target.value);
+            setLgaId("");
+          }}
           className={`${inputClass} mt-4`}
         >
           <option value="" disabled>
@@ -263,13 +300,18 @@ export function StartForm({
         </select>
         <FieldError message={errors.stateCode} />
 
-        {stateCode === LAGOS_CODE ? (
+        {stateLgas.length > 0 ? (
           <>
-            <select name="lgaId" defaultValue="" className={`${inputClass} mt-3`}>
+            <select
+              name="lgaId"
+              value={lgaId}
+              onChange={(e) => setLgaId(e.target.value)}
+              className={`${inputClass} mt-3`}
+            >
               <option value="" disabled>
-                Choose your LGA
+                Choose your local government area
               </option>
-              {lagosLgas.map((l) => (
+              {stateLgas.map((l) => (
                 <option key={l.id} value={l.id}>
                   {l.name}
                 </option>
@@ -281,6 +323,8 @@ export function StartForm({
           stateCode && (
             <input
               name="area"
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
               placeholder="Your town or area"
               className={`${inputClass} mt-3`}
             />
@@ -292,7 +336,7 @@ export function StartForm({
       <section className="pop rounded-3xl bg-surface p-5 sm:p-6">
         <h2 className="font-display text-xl font-black">5. About you</h2>
         <div className="mt-4 space-y-5">
-          <JoinFields errors={errors} />
+          <JoinFields errors={errors} values={state.values} />
         </div>
       </section>
 

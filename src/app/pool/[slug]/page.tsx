@@ -113,7 +113,17 @@ export default async function PoolPage({
           <h1 className="font-display mt-7 text-center text-3xl font-black sm:text-4xl">
             {pool.product}
           </h1>
-          <p className="mt-1 text-center text-lg font-semibold text-muted">{pool.place}</p>
+          {pool.spec && (
+            <p className="mt-1.5 text-center">
+              <span
+                className="rounded-full border-2 border-foreground px-3 py-1 text-sm font-bold"
+                style={{ background: "var(--marigold)" }}
+              >
+                {pool.spec}
+              </span>
+            </p>
+          )}
+          <p className="mt-2 text-center text-lg font-semibold text-muted">{pool.place}</p>
 
           <div className="mt-6 grid grid-cols-3 gap-3 text-center">
             {[

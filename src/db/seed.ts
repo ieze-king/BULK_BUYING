@@ -3,7 +3,7 @@ import { notInArray, sql } from "drizzle-orm";
 import { db } from "./index";
 import { lgas, products, states } from "./schema";
 import { CATALOG } from "../lib/catalog";
-import { LAGOS_CODE, LAGOS_LGAS, STATES } from "../lib/naija";
+import { LGAS_BY_STATE, STATES } from "../lib/naija";
 
 /** `excluded.<col>` refers to the row Postgres tried to insert, in an upsert. */
 const excluded = (column: string) => sql.raw(`excluded.${column}`);
@@ -13,11 +13,11 @@ async function main() {
   console.log("Seeding states...");
   await db.insert(states).values(STATES).onConflictDoNothing();
 
-  console.log("Seeding Lagos LGAs...");
-  await db
-    .insert(lgas)
-    .values(LAGOS_LGAS.map((name) => ({ stateCode: LAGOS_CODE, name })))
-    .onConflictDoNothing();
+  console.log("Seeding LGAs...");
+  const allLgas = Object.entries(LGAS_BY_STATE).flatMap(([stateCode, names]) =>
+    names.map((name) => ({ stateCode, name })),
+  );
+  await db.insert(lgas).values(allLgas).onConflictDoNothing();
 
   console.log("Seeding catalogue...");
   await db
@@ -47,7 +47,7 @@ async function main() {
   }
 
   console.log(
-    `Done: ${STATES.length} states, ${LAGOS_LGAS.length} Lagos LGAs, ${CATALOG.length} products.`,
+    `Done: ${STATES.length} states, ${allLgas.length} LGAs, ${CATALOG.length} products.`,
   );
   process.exit(0);
 }

@@ -141,6 +141,17 @@ export const pools = pgTable(
     /** One link, pinned, creator-only: a WhatsApp group, a Meet, whatever. */
     coordinationLink: text("coordination_link"),
 
+    /**
+     * Brand or specification, set by whoever starts the pool.
+     *
+     * Free text on the pool rather than a catalogue entry per brand. A group
+     * buying together has to agree on exactly what they are buying, but making
+     * "Mama Gold rice" its own product would split rice demand across every
+     * brand and nothing would ever sum. The pool stays keyed to the commodity;
+     * this says which one the group settled on.
+     */
+    spec: text("spec"),
+
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [

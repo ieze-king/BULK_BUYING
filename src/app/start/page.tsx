@@ -3,7 +3,6 @@ import { asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { lgas, products, states } from "@/db/schema";
 import { CATEGORY_ORDER } from "@/lib/catalog";
-import { LAGOS_CODE } from "@/lib/naija";
 import { SiteHeader } from "@/components/site-header";
 import { StartForm } from "./start-form";
 
@@ -12,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function StartPage({ searchParams }: PageProps<"/start">) {
   const sp = await searchParams;
   const preselect = Number(sp.product) || null;
-  const [items, allStates, lagosLgas] = await Promise.all([
+  const [items, allStates, allLgas] = await Promise.all([
     db
       .select({
         id: products.id,
@@ -25,7 +24,10 @@ export default async function StartPage({ searchParams }: PageProps<"/start">) {
       .where(eq(products.active, true))
       .orderBy(asc(products.name)),
     db.select().from(states).orderBy(asc(states.name)),
-    db.select().from(lgas).where(eq(lgas.stateCode, LAGOS_CODE)).orderBy(asc(lgas.name)),
+    db
+      .select({ id: lgas.id, stateCode: lgas.stateCode, name: lgas.name })
+      .from(lgas)
+      .orderBy(asc(lgas.name)),
   ]);
 
   const categories = CATEGORY_ORDER.filter((c) => items.some((i) => i.category === c));
@@ -55,7 +57,7 @@ export default async function StartPage({ searchParams }: PageProps<"/start">) {
             products={items}
             categories={categories}
             states={allStates}
-            lagosLgas={lagosLgas}
+            lgas={allLgas}
             preselectId={preselect}
           />
         </div>
