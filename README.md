@@ -1,5 +1,7 @@
 # Bulk Buying
 
+Live: https://bulk-buying.vercel.app
+
 Capture what people want to buy in bulk, how much, and where, then find the places
 where enough demand exists to negotiate a bulk price.
 
