@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   pgTable,
   serial,
@@ -143,8 +144,19 @@ export const pools = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
-    // The anti-fragmentation guarantee: one pool per product per place.
-    uniqueIndex("pools_product_place_idx").on(t.productId, t.stateCode, t.lgaId, t.areaLabel),
+    /*
+     * The anti-fragmentation guarantee, for public pools only: one pool per
+     * product per place, so demand always sums. Private pools are somebody's
+     * own circle and may legitimately duplicate a place, so they are excluded.
+     *
+     * Note Postgres treats NULLs as distinct in a unique index, so this does
+     * not catch two public pools that both have a null lga_id. findOrCreatePool
+     * selects before inserting and re-selects on conflict, which covers that in
+     * practice; this index is the backstop, not the mechanism.
+     */
+    uniqueIndex("pools_public_product_place_idx")
+      .on(t.productId, t.stateCode, t.lgaId, t.areaLabel)
+      .where(sql`${t.visibility} = 'public'`),
     index("pools_place_idx").on(t.stateCode, t.lgaId),
   ],
 );
