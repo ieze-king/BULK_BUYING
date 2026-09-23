@@ -34,7 +34,7 @@ export default async function Home() {
           <div className="mx-auto max-w-6xl px-4 pt-12 pb-10 text-center sm:pt-16">
             <p className="rise inline-flex items-center gap-2 rounded-full border-2 border-foreground/15 bg-surface px-4 py-1.5 text-sm font-bold">
               <span className="size-2 rounded-full" style={{ background: "var(--coral)" }} />
-              Bulk buying, together
+              Private by default &middot; Nothing to pay
             </p>
 
             <h1
@@ -51,8 +51,9 @@ export default async function Home() {
               className="rise mx-auto mt-5 max-w-xl text-lg leading-relaxed sm:text-xl"
               style={{ animationDelay: "120ms" }}
             >
-              Join a pool for something you want to buy, or start your own. The bigger a
-              pool grows, the better the price we can negotiate for everyone in it.
+              Start a pool for what you want and share it with your family, your estate
+              group or your trade association. When you reach your number, you organise
+              the order together.
             </p>
 
             <div
@@ -118,8 +119,8 @@ export default async function Home() {
           <div className="mx-auto grid max-w-6xl gap-5 sm:grid-cols-3">
             {[
               { n: "1", hue: "var(--marigold)", t: "Join or start a pool", b: "Say what you want and how many. No account, no payment." },
-              { n: "2", hue: "var(--coral)", t: "Bring people in", b: "Share it. Every person who joins makes the order bigger." },
-              { n: "3", hue: "var(--accent)", t: "We negotiate, then call", b: "When a pool is big enough we take it to suppliers and come back with a price." },
+              { n: "2", hue: "var(--coral)", t: "Bring your people in", b: "Send the link to people you actually know. Every one who joins makes the order bigger." },
+              { n: "3", hue: "var(--accent)", t: "Your group takes it from there", b: "When you hit your number the pool closes, and the group agrees who gets quotes and how to pay. We do not buy, hold money or deliver." },
             ].map((s, i) => (
               <div
                 key={s.n}

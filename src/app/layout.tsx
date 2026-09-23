@@ -18,13 +18,13 @@ const body = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "Bulk prices aren't for big buyers. They're for big orders.",
+  title: "Order together, pay less",
   description:
-    "You don't need to place a big order on your own to get big-order prices. Tell us what you want, we combine it with everyone else, and take the whole order to suppliers.",
+    "Suppliers price a big order differently, and most people cannot reach that alone. Start a private pool for what you want, share it with people you know, and organise the order together.",
   openGraph: {
-    title: "Bulk prices aren't for big buyers. They're for big orders.",
+    title: "Turn your group into a bulk buyer",
     description:
-      "You don't need to place a big order on your own to get big-order prices. Tell us what you want in bulk and we combine it with everyone else.",
+      "Start a private pool for what you want to buy in bulk, share it with your family or your trade group, and organise the order together.",
     type: "website",
   },
 };
