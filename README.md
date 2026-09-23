@@ -220,6 +220,31 @@ pilot; budget for Pro if this converts into a business.
 
 ### Schema changes after launch
 
-`drizzle-kit push` is right for a fresh database but wrong for one holding real user
-data. Before launch, switch to generated migrations (`drizzle-kit generate`, then
-`drizzle-kit migrate`) so schema changes are reviewable and reversible.
+`drizzle-kit push` reconciles by dropping and recreating, which is how a schema
+change becomes data loss. It is fine for a fresh database and wrong for one holding
+real data.
+
+Production changes go in `migrations/` as plain idempotent SQL, applied by hand in the
+Neon SQL Editor against the `production` branch. Verify one first by recreating the
+current production schema in a scratch local database, applying the file twice, and
+booting the app against it.
+
+## Environments
+
+| | Database | Notes |
+| --- | --- | --- |
+| Local | local Postgres via `.env.local` | where you develop |
+| Preview | Neon `preview` branch | every non-main branch, behind Vercel SSO |
+| Production | Neon `production` branch | `main`, live at bulk-buying.vercel.app |
+
+Preview and production have separate `DATABASE_URL` values in Vercel, scoped to one
+environment each, so testing a branch can never write into real demand. `/admin` prints
+which environment and which database endpoint it is reading, so this is visible rather
+than assumed.
+
+Refresh preview with Neon's **Reset from parent**, which re-copies production. Note it
+assigns the branch a new compute endpoint, so the hostname changes and Vercel's preview
+`DATABASE_URL` needs updating when you do.
+
+Secrets in Vercel are write-only. A forgotten `ADMIN_PASSWORD` is reset, never
+recovered, and the change only takes effect on the next deployment.
