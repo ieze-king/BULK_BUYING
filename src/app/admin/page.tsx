@@ -1,4 +1,5 @@
 import { isAdmin } from "@/lib/admin";
+import { databaseLabel, deploymentLabel } from "@/lib/env-badge";
 import { LoginForm } from "./login-form";
 import {
   catalogueGaps,
@@ -68,6 +69,9 @@ export default async function AdminPage() {
     catalogueGaps(),
   ]);
 
+  const db = databaseLabel();
+  const env = deploymentLabel();
+
   const readyRate =
     totals.members > 0
       ? `${Math.round((100 * totals.ready) / totals.members)}%`
@@ -75,8 +79,20 @@ export default async function AdminPage() {
 
   return (
     <main className="flex-1 px-4 py-8 max-w-5xl mx-auto space-y-10">
-      <div className="flex items-baseline justify-between gap-4">
-        <h1 className="font-display text-2xl font-bold">Demand overview</h1>
+      <div className="flex flex-wrap items-baseline justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-bold">Demand overview</h1>
+          <p className="mt-1 text-sm text-muted">
+            <span
+              className={`rounded px-1.5 py-0.5 font-semibold ${
+                env === "production" ? "bg-accent-soft" : "bg-marigold"
+              }`}
+            >
+              {env}
+            </span>{" "}
+            reading <code className="font-mono">{db.branch ?? db.host}</code>
+          </p>
+        </div>
         <a href="/admin/export" className="text-sm text-accent underline underline-offset-4">
           Export CSV
         </a>
