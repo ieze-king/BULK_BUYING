@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import { and, desc, eq, gte, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, gt, gte, isNull, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { lgas, people, poolMembers, pools, products, states } from "@/db/schema";
 import { STARTER_SLUGS } from "@/lib/catalog";
@@ -48,6 +48,17 @@ export function poolState(pool: {
   return "open";
 }
 
+/**
+ * poolState says a pool is closed once its window has run out, whether or not
+ * anything stamped closed_at. SQL that asks only `closed_at IS NULL` therefore
+ * disagrees with the page, and an expired pool goes on being treated as live.
+ *
+ * This is that same rule in SQL. Nothing sweeps closed_at, and nothing needs
+ * to: the window is a fact about closes_at, so deriving it costs one comparison
+ * and no scheduled job.
+ */
+const STILL_OPEN = sql`pl.closed_at IS NULL AND (pl.closes_at IS NULL OR pl.closes_at > now())`;
+
 const SUMMARY_SELECT = sql`
   SELECT pl.slug,
          pl.product_id,
@@ -88,7 +99,7 @@ const SUMMARY_SELECT = sql`
 export async function listPools(limit = 40) {
   const { rows } = await db.execute<PoolSummary>(sql`
     ${SUMMARY_SELECT}
-    WHERE pl.closed_at IS NULL
+    WHERE ${STILL_OPEN}
     GROUP BY pl.id, p.name, p.unit_label, p.category, place, pl.created_at
     HAVING COUNT(m.id) > 0
     ORDER BY total_quantity DESC, pl.created_at DESC
@@ -160,6 +171,7 @@ export async function findOrCreatePool(input: {
       and(
         eq(pools.joinPolicy, "open"),
         isNull(pools.closedAt),
+        or(isNull(pools.closesAt), gt(pools.closesAt, new Date())),
         eq(pools.productId, input.productId),
         eq(pools.stateCode, input.stateCode),
         input.lgaId === null ? isNull(pools.lgaId) : eq(pools.lgaId, input.lgaId),
@@ -271,6 +283,7 @@ export async function openPool(
       WHERE id = ${poolId}
         AND join_policy = 'invite'
         AND closed_at IS NULL
+        AND (closes_at IS NULL OR closes_at > now())
         AND NOT EXISTS (
           SELECT 1 FROM pools o
           WHERE o.join_policy = 'open'
