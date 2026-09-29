@@ -5,12 +5,20 @@
 --
 -- Safe to run more than once.
 
+-- Tolerates every state this column can be in. An earlier migration creates
+-- "visibility", so replaying that one on a database already past this point
+-- brings it back alongside join_policy; dropping the stale copy is then the
+-- correct repair rather than an error.
 DO $$
+DECLARE
+  has_old  boolean := EXISTS (SELECT 1 FROM information_schema.columns
+                              WHERE table_name = 'pools' AND column_name = 'visibility');
+  has_new  boolean := EXISTS (SELECT 1 FROM information_schema.columns
+                              WHERE table_name = 'pools' AND column_name = 'join_policy');
 BEGIN
-  IF EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_name = 'pools' AND column_name = 'visibility'
-  ) THEN
+  IF has_old AND has_new THEN
+    ALTER TABLE pools DROP COLUMN visibility;
+  ELSIF has_old THEN
     ALTER TABLE pools RENAME COLUMN visibility TO join_policy;
   END IF;
 END $$;

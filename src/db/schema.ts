@@ -225,3 +225,18 @@ export const poolComments = pgTable(
   },
   (t) => [index("pool_comments_pool_idx").on(t.poolId, t.createdAt)],
 );
+
+
+/**
+ * What the migration runner has already applied.
+ *
+ * Declared here only so drizzle-kit knows it exists. Without this, running
+ * drizzle-kit push locally proposes dropping it, which would erase the record
+ * of every applied migration and invite the whole table set to be rebuilt.
+ * The runner creates it itself; nothing in the app reads it.
+ */
+export const migrationsTable = pgTable("_migrations", {
+  filename: text("filename").primaryKey(),
+  checksum: text("checksum").notNull(),
+  appliedAt: timestamp("applied_at", { withTimezone: true }).notNull().defaultNow(),
+});

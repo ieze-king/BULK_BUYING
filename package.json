@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "tsx src/db/migrate.ts && next build",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
@@ -13,7 +13,7 @@
     "db:seed": "tsx src/db/seed.ts",
     "db:studio": "drizzle-kit studio",
     "db:setup": "drizzle-kit push --force && tsx src/db/seed.ts",
-    "db:setup:prod": "set -a && . ./.env.production.local && set +a && drizzle-kit push --force && tsx src/db/seed.ts"
+    "migrate": "tsx src/db/migrate.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.3",

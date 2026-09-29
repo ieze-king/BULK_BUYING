@@ -228,16 +228,35 @@ matter and a missing variable will not produce a confusing build failure.
 Note: Vercel's Hobby tier is for non-commercial use. It is fine for a validation
 pilot; budget for Pro if this converts into a business.
 
-### Schema changes after launch
+### Schema changes
 
-`drizzle-kit push` reconciles by dropping and recreating, which is how a schema
-change becomes data loss. It is fine for a fresh database and wrong for one holding
-real data.
+**Migrations run as part of the build**, so a schema change ships with the code that
+needs it. Applying them by hand is what broke production twice: the deploy went out,
+the SQL did not, and every visitor got a server error.
 
-Production changes go in `migrations/` as plain idempotent SQL, applied by hand in the
-Neon SQL Editor against the `production` branch. Verify one first by recreating the
-current production schema in a scratch local database, applying the file twice, and
-booting the app against it.
+```bash
+npm run migrate      # apply pending migrations
+npm run build        # migrate, then build
+```
+
+Each file in `migrations/` runs once, in filename order, inside a transaction. An
+advisory lock serialises concurrent builds. A checksum catches a file edited after it
+was applied, because a migration is a record of what the database has already done:
+edit forward with a new file rather than changing an old one.
+
+`000-initial.sql` builds the whole schema from nothing, and every statement is guarded,
+so it is equally a no-op against the production database that predates the runner. A
+brand new database and production therefore arrive at the same place.
+
+Writing one: generate the SQL with `drizzle-kit generate`, add `IF NOT EXISTS` guards,
+then verify it before trusting it. Recreate the current production schema in a scratch
+database, apply the file twice, and boot the app against the result. Both real bugs
+found in `003` (a missing pgcrypto function, and a rename that could not be replayed)
+came from doing exactly that.
+
+**`drizzle-kit push` is for local development only.** Pushing to production is what let
+the code and the database drift apart. `_migrations` is declared in `schema.ts` purely
+so push does not propose dropping it.
 
 ## Environments
 
