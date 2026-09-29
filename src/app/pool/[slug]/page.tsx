@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { categoryHue, categoryTint } from "@/lib/category-style";
 import { peoplePhrase, unitPhrase } from "@/lib/format";
@@ -64,6 +64,19 @@ export default async function PoolPage({
       : `${proto}://${host}/pool/${slug}`;
 
   const hasKey = sp.k === pool.join_token;
+
+  // People share by copying the address bar, not by finding the Share button.
+  // A member arriving from the listing, a bookmark or history has no ?k=, so
+  // whatever they copy is a link nobody can join with. Put the key back for
+  // anyone already entitled to it. This grants nothing new: a member joined
+  // with the key and could always pass it on.
+  if (pool.join_policy === "invite" && !hasKey && (viewer.isMember || isCreator)) {
+    const q = new URLSearchParams({ k: pool.join_token });
+    if (sp.joined === "1") q.set("joined", "1");
+    if (sp.new === "1") q.set("new", "1");
+    redirect(`/pool/${slug}?${q}`);
+  }
+
   const canJoin = pool.join_policy === "open" || hasKey || viewer.isMember;
   const justJoined = sp.joined === "1";
   const justCreated = sp.new === "1";
@@ -237,7 +250,12 @@ export default async function PoolPage({
               <h2 className="font-display text-2xl font-black">Invite only</h2>
               <p className="mt-2">
                 Whoever started this pool is keeping it to their own circle. You can
-                see how it is going, but you need their link to join.
+                see how it is going, but you need their invite link to join.
+              </p>
+              <p className="mt-2 text-muted">
+                If someone sent you this page, ask them to send the link again using
+                the Share button on it. A link copied from the address bar leaves the
+                invite out.
               </p>
               <Link
                 href={`/start?product=${pool.product_id}`}
