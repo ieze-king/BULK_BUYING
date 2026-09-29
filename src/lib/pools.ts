@@ -238,9 +238,18 @@ export async function joinPool(
  * can exceed it. Only the first crossing sets the clock, so a member editing
  * their quantity later cannot restart it.
  */
+/**
+ * A creator joins their own pool, so a goal their own quantity already covers
+ * was tripping the moment the pool was made: the window ran out before anyone
+ * had been sent the link. A group order needs a group, so the clock waits for
+ * someone other than the person who started it.
+ */
+const MIN_MEMBERS_FOR_CLOSING = 2;
+
 export async function startClosingWindowIfGoalReached(poolId: number) {
   const { rows } = await db.execute<{ reached: boolean }>(sql`
-    SELECT COALESCE(SUM(m.quantity), 0) >= pl.goal_quantity AS reached
+    SELECT COALESCE(SUM(m.quantity), 0) >= pl.goal_quantity
+           AND COUNT(DISTINCT m.person_id) >= ${MIN_MEMBERS_FOR_CLOSING} AS reached
     FROM pools pl
     LEFT JOIN pool_members m ON m.pool_id = pl.id
     WHERE pl.id = ${poolId} AND pl.goal_reached_at IS NULL AND pl.closed_at IS NULL

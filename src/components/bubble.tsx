@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { categoryHue, categoryTint } from "@/lib/category-style";
-import { peoplePhrase, unitPhrase } from "@/lib/format";
+import { closingSoonLabel, peoplePhrase, unitPhrase } from "@/lib/format";
 import type { PoolSummary } from "@/lib/pools";
 
 /**
@@ -22,6 +22,7 @@ export function Bubble({
   max: number;
   index?: number;
 }) {
+  const closing = closingSoonLabel(pool.closes_at);
   const ratio = max > 0 ? Math.sqrt(pool.total_quantity / max) : 0;
   const size = Math.round(120 + ratio * 120); // 120px to 240px
   const hue = categoryHue(pool.category);
@@ -52,6 +53,14 @@ export function Bubble({
         {pool.join_policy === "invite" && (
           <span className="mt-1 block text-[0.7rem] font-bold opacity-60">
             invite only
+          </span>
+        )}
+        {closing && (
+          <span
+            className="mt-1 block text-[0.7rem] font-black"
+            style={{ color: "var(--coral)" }}
+          >
+            {closing}
           </span>
         )}
       </span>
