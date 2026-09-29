@@ -254,6 +254,10 @@ database, apply the file twice, and boot the app against the result. Both real b
 found in `003` (a missing pgcrypto function, and a rename that could not be replayed)
 came from doing exactly that.
 
+While a migration is still unshipped and you need to change it, clear its row from
+`_migrations` locally and re-run; the checksum guard exists to stop an applied file
+changing underneath a database that has already run it, which is a different thing.
+
 **`drizzle-kit push` is for local development only.** Pushing to production is what let
 the code and the database drift apart. `_migrations` is declared in `schema.ts` purely
 so push does not propose dropping it.
