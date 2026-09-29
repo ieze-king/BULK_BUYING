@@ -5,6 +5,7 @@ import {
   closePoolNow,
   confirmCoordinator,
   nominateCoordinator,
+  openPoolToEveryone,
   postComment,
   setCoordinationLink,
   type PoolFormState,
@@ -237,6 +238,50 @@ export function Coordinator({
           </p>
         </form>
       )}
+    </section>
+  );
+}
+
+export function OpenToEveryone({
+  slug,
+  product,
+  place,
+}: {
+  slug: string;
+  product: string;
+  place: string;
+}) {
+  const [state, action, pending] = useActionState<PoolFormState, FormData>(
+    openPoolToEveryone,
+    {},
+  );
+  return (
+    <section className="pop mt-6 rounded-2xl bg-surface p-5">
+      <h3 className="font-display text-lg font-black">Only your circle can join</h3>
+      <p className="mt-2">
+        People you send the link to need the invite in it. If you want anyone who
+        finds this pool to be able to add their quantity, open it.
+      </p>
+      <form action={action} className="mt-4">
+        <input type="hidden" name="slug" value={slug} />
+        <button
+          type="submit"
+          disabled={pending}
+          className="pop rounded-xl px-5 py-3 font-bold disabled:opacity-60"
+          style={{ background: "var(--marigold)" }}
+        >
+          {pending ? "Opening…" : "Let anyone join"}
+        </button>
+        <p className="mt-1.5 text-sm text-muted">
+          This cannot be undone. Everyone already in stays in, and {product} in{" "}
+          {place} becomes one pool that anyone can add to.
+        </p>
+        {state.formError && (
+          <p role="alert" className="mt-1 text-sm font-semibold text-red-600">
+            {state.formError}
+          </p>
+        )}
+      </form>
     </section>
   );
 }

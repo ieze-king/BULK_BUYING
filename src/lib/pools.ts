@@ -250,6 +250,57 @@ export async function closePool(poolId: number) {
     .where(and(eq(pools.id, poolId), isNull(pools.closedAt)));
 }
 
+/**
+ * Invite -> open, for a creator whose shared link turned out to be unusable by
+ * the people they sent it to.
+ *
+ * One way only. Listing is not what changes here (every pool is listed either
+ * way), so going back would strand nobody, but the open-pool uniqueness index
+ * means a round trip can fail on the way back in. Not offering it beats
+ * offering it and having it break.
+ *
+ * The guard repeats what pools_open_product_place_idx enforces, so the failure
+ * is a message naming the other pool instead of a constraint violation.
+ */
+export async function openPool(
+  poolId: number,
+): Promise<{ ok: true } | { ok: false; conflictSlug: string | null }> {
+  try {
+    const { rows } = await db.execute<{ id: number }>(sql`
+      UPDATE pools SET join_policy = 'open'
+      WHERE id = ${poolId}
+        AND join_policy = 'invite'
+        AND closed_at IS NULL
+        AND NOT EXISTS (
+          SELECT 1 FROM pools o
+          WHERE o.join_policy = 'open'
+            AND o.product_id = pools.product_id
+            AND o.state_code = pools.state_code
+            AND o.lga_id IS NOT DISTINCT FROM pools.lga_id
+            AND o.area_label IS NOT DISTINCT FROM pools.area_label
+        )
+      RETURNING id
+    `);
+    if (rows.length > 0) return { ok: true };
+  } catch {
+    // Lost a race against another pool opening in the same place. Fall through
+    // and report it as the conflict it is.
+  }
+  const { rows } = await db.execute<{ slug: string }>(sql`
+    SELECT o.slug
+    FROM pools o, pools p
+    WHERE p.id = ${poolId}
+      AND o.id <> p.id
+      AND o.join_policy = 'open'
+      AND o.product_id = p.product_id
+      AND o.state_code = p.state_code
+      AND o.lga_id IS NOT DISTINCT FROM p.lga_id
+      AND o.area_label IS NOT DISTINCT FROM p.area_label
+    LIMIT 1
+  `);
+  return { ok: false, conflictSlug: rows[0]?.slug ?? null };
+}
+
 export type Starter = {
   productId: number;
   product: string;

@@ -14,7 +14,13 @@ import {
   viewerOf,
 } from "@/lib/pools";
 import { getAnonId } from "@/lib/session";
-import { CloseEarly, Coordinator, CoordinationLink, Discussion } from "./coordination";
+import {
+  CloseEarly,
+  Coordinator,
+  CoordinationLink,
+  Discussion,
+  OpenToEveryone,
+} from "./coordination";
 import { Countdown } from "./countdown";
 import { JoinForm } from "./join-form";
 import { SharePool } from "./share-pool";
@@ -206,6 +212,10 @@ export default async function PoolPage({
 
           {state !== "closed" && (viewer.isMember || isCreator) && (
             <SharePool url={shareUrl} product={pool.product} place={pool.place} />
+          )}
+
+          {isCreator && state !== "closed" && pool.join_policy === "invite" && (
+            <OpenToEveryone slug={slug} product={pool.product} place={pool.place} />
           )}
 
           {isCreator && state !== "closed" && <CloseEarly slug={slug} />}

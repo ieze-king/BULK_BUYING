@@ -12,6 +12,7 @@ import {
   findOrCreatePool,
   getOrCreatePerson,
   joinPool,
+  openPool,
   poolState,
 } from "@/lib/pools";
 import { poolComments, poolMembers, pools } from "@/db/schema";
@@ -335,6 +336,40 @@ export async function confirmCoordinator(_prev: PoolFormState, formData: FormDat
     .where(and(eq(poolMembers.poolId, pool.id), eq(poolMembers.personId, personId)));
 
   revalidatePath(`/pool/${slug}`);
+  return {};
+}
+
+export async function openPoolToEveryone(
+  _prev: PoolFormState,
+  formData: FormData,
+) {
+  const slug = String(formData.get("slug") ?? "");
+  const anonId = await ensureAnonId();
+  const pool = await loadPool(slug);
+  if (!pool) return { formError: "That pool no longer exists." };
+
+  const person = await getOrCreatePerson(anonId);
+  if (pool.started_by !== person.id) {
+    return { formError: "Only whoever started this pool can open it." };
+  }
+  if (poolState(pool) === "closed") {
+    return { formError: "This pool is closed, so opening it changes nothing." };
+  }
+  if (pool.join_policy === "open") return {};
+
+  const result = await openPool(pool.id);
+  if (!result.ok) {
+    return {
+      formError: result.conflictSlug
+        ? "There is already an open pool for this item in this place, and demand only adds up if there is one. Send people to /pool/" +
+          result.conflictSlug +
+          " instead."
+        : "This pool could not be opened. Try again in a moment.",
+    };
+  }
+
+  revalidatePath(`/pool/${slug}`);
+  revalidatePath("/");
   return {};
 }
 
