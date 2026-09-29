@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Figtree, Fraunces } from "next/font/google";
 import "./globals.css";
+import { SiteFooter } from "@/components/site-footer";
 
 /* A warm, crafted serif for display; a friendly geometric sans for reading. */
 const display = Fraunces({
@@ -41,7 +42,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${display.variable} ${body.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }

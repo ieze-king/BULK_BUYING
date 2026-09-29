@@ -110,6 +110,35 @@ export async function listPools(limit = 40) {
   return rows;
 }
 
+/**
+ * The pools this device is in, closed ones included.
+ *
+ * There are no accounts, so a pool link is the only thread back to a pool, and
+ * people lose links. Closed pools matter most here: closing is when the group
+ * has to agree who orders, so that is exactly when someone needs to find their
+ * way back.
+ *
+ * Ordered by the person's own last action rather than by the pool, so the one
+ * they just joined is the one at the front.
+ */
+export async function listMyPools(anonId: string | null, limit = 12) {
+  if (!anonId) return [];
+  const { rows } = await db.execute<PoolSummary>(sql`
+    ${SUMMARY_SELECT}
+    WHERE pl.id IN (
+      SELECT m2.pool_id FROM pool_members m2
+      JOIN people pe ON pe.id = m2.person_id
+      WHERE pe.anon_id = ${anonId}
+    )
+    GROUP BY pl.id, p.name, p.unit_label, p.category, place, pl.created_at
+    ORDER BY MAX(m.joined_at) FILTER (
+      WHERE m.person_id IN (SELECT id FROM people WHERE anon_id = ${anonId})
+    ) DESC NULLS LAST
+    LIMIT ${limit}
+  `);
+  return rows;
+}
+
 export async function getPool(slug: string) {
   const { rows } = await db.execute<PoolSummary>(sql`
     ${SUMMARY_SELECT}

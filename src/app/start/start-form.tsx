@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState } from "react";
 import { startPool, type PoolFormState } from "@/app/pool-actions";
 import { FieldError, JoinFields, inputClass } from "@/components/join-fields";
+import { ErrorSummary, useFocusFirstError } from "@/components/form-errors";
 import { MissingProduct } from "@/components/missing-product";
 import { categoryTint } from "@/lib/category-style";
 
@@ -15,6 +16,29 @@ type Item = {
 };
 
 const QUICK = [1, 2, 5, 10, 20];
+
+/** Visual order of the form, so "the first problem" means the topmost one. */
+const FIELD_ORDER = [
+  "productId", "spec", "quantity", "goalQuantity", "joinPolicy",
+  "stateCode", "lgaId", "area", "name", "phone", "participantType",
+  "interested", "consent",
+] as const;
+
+const FIELD_LABELS: Record<string, string> = {
+  productId: "The item",
+  spec: "Brand or spec",
+  quantity: "How many you want",
+  goalQuantity: "The group's goal",
+  joinPolicy: "Who can join",
+  stateCode: "State",
+  lgaId: "Local government area",
+  area: "Your area",
+  name: "Your name",
+  phone: "Phone number",
+  participantType: "Who you are buying as",
+  interested: "How interested you are",
+  consent: "Permission to contact you",
+};
 
 export function StartForm({
   products,
@@ -53,6 +77,7 @@ export function StartForm({
     [lgas, stateCode],
   );
   const errors = state.errors ?? {};
+  useFocusFirstError(state.errors, FIELD_ORDER);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -344,11 +369,12 @@ export function StartForm({
         </div>
       </section>
 
-      {state.formError && (
-        <p role="alert" className="text-sm font-semibold text-red-600">
-          {state.formError}
-        </p>
-      )}
+      <ErrorSummary
+        errors={state.errors}
+        formError={state.formError}
+        labels={FIELD_LABELS}
+        order={FIELD_ORDER}
+      />
 
       <button
         type="submit"

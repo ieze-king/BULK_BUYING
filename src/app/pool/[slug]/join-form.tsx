@@ -3,8 +3,22 @@
 import { useActionState, useState } from "react";
 import { joinExistingPool, type PoolFormState } from "@/app/pool-actions";
 import { FieldError, JoinFields, inputClass } from "@/components/join-fields";
+import { ErrorSummary, useFocusFirstError } from "@/components/form-errors";
 
 const QUICK = [1, 2, 5, 10, 20];
+
+const FIELD_ORDER = [
+  "quantity", "name", "phone", "participantType", "interested", "consent",
+] as const;
+
+const FIELD_LABELS: Record<string, string> = {
+  quantity: "How many you want",
+  name: "Your name",
+  phone: "Phone number",
+  participantType: "Who you are buying as",
+  interested: "How interested you are",
+  consent: "Permission to contact you",
+};
 
 export function JoinForm({
   slug,
@@ -24,6 +38,7 @@ export function JoinForm({
   );
   const [quantity, setQuantity] = useState("");
   const errors = state.errors ?? {};
+  useFocusFirstError(state.errors, FIELD_ORDER);
 
   return (
     <form action={formAction} className="pop mt-10 rounded-3xl bg-surface p-5 sm:p-7">
@@ -77,11 +92,12 @@ export function JoinForm({
         <JoinFields errors={errors} values={state.values} />
       </div>
 
-      {state.formError && (
-        <p role="alert" className="mt-4 text-sm font-semibold text-red-600">
-          {state.formError}
-        </p>
-      )}
+            <ErrorSummary
+        errors={state.errors}
+        formError={state.formError}
+        labels={FIELD_LABELS}
+        order={FIELD_ORDER}
+      />
 
       <button
         type="submit"

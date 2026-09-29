@@ -3,7 +3,9 @@ import { sql } from "drizzle-orm";
 import { db } from "@/db";
 import { SiteHeader } from "@/components/site-header";
 import { PoolField } from "@/components/pool-field";
-import { listPools, suggestedStarters } from "@/lib/pools";
+import { MyPools } from "@/components/my-pools";
+import { listMyPools, listPools, suggestedStarters } from "@/lib/pools";
+import { getAnonId } from "@/lib/session";
 import { peoplePhrase } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +20,13 @@ export default async function Home() {
    * the visitor has no idea whether to come back. Failures still reach the
    * logs, and /admin keeps reporting the truth.
    */
+  let mine: Awaited<ReturnType<typeof listMyPools>> = [];
+  try {
+    mine = await listMyPools(await getAnonId());
+  } catch (error) {
+    console.error("Home: could not read this visitor's pools", error);
+  }
+
   let pools: Awaited<ReturnType<typeof listPools>> = [];
   let people = 0;
   let poolCount = 0;
@@ -108,6 +117,8 @@ export default async function Home() {
             )}
           </div>
         </div>
+
+        <MyPools pools={mine} />
 
         <section id="pools" className="scroll-mt-20 px-4 py-12">
           <div className="mx-auto max-w-6xl">
