@@ -102,7 +102,9 @@ export async function listPools(limit = 40) {
     WHERE ${STILL_OPEN}
     GROUP BY pl.id, p.name, p.unit_label, p.category, place, pl.created_at
     HAVING COUNT(m.id) > 0
-    ORDER BY total_quantity DESC, pl.created_at DESC
+    -- Newest first. Size already says which pools are big, so spending the
+    -- order on it too buried anything just started under the same few bubbles.
+    ORDER BY pl.created_at DESC, total_quantity DESC
     LIMIT ${limit}
   `);
   return rows;
