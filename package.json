@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "tsx src/db/migrate.ts && next build",
+    "build": "tsx src/db/migrate.ts && tsx src/db/seed.ts && next build",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",

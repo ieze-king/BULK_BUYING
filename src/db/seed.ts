@@ -8,18 +8,31 @@ import { LGAS_BY_STATE, STATES } from "../lib/naija";
 /** `excluded.<col>` refers to the row Postgres tried to insert, in an upsert. */
 const excluded = (column: string) => sql.raw(`excluded.${column}`);
 
-/** Idempotent: safe to re-run after editing the catalogue or prices. */
+/**
+ * Reference data: states, LGAs, and the catalogue.
+ *
+ * Runs on every build, right after migrations, because this is data the app
+ * cannot work without and it has no business being applied by hand. It is
+ * idempotent, so it doubles as the way a catalogue edit reaches production:
+ * change catalog.ts, deploy, done.
+ */
 async function main() {
-  console.log("Seeding states...");
+  if (!process.env.DATABASE_URL) {
+    // A build with no database is legitimate on a project's first deploy.
+    console.warn("[seed] DATABASE_URL is not set, skipping.");
+    process.exit(0);
+  }
+
+  console.log("[seed] states...");
   await db.insert(states).values(STATES).onConflictDoNothing();
 
-  console.log("Seeding LGAs...");
+  console.log("[seed] LGAs...");
   const allLgas = Object.entries(LGAS_BY_STATE).flatMap(([stateCode, names]) =>
     names.map((name) => ({ stateCode, name })),
   );
   await db.insert(lgas).values(allLgas).onConflictDoNothing();
 
-  console.log("Seeding catalogue...");
+  console.log("[seed] catalogue...");
   await db
     .insert(products)
     .values(CATALOG.map((p, i) => ({ ...p, sortOrder: i })))
@@ -43,11 +56,11 @@ async function main() {
     .where(notInArray(products.slug, CATALOG.map((p) => p.slug)))
     .returning({ slug: products.slug });
   if (retired.length > 0) {
-    console.log(`Retired ${retired.length}: ${retired.map((r) => r.slug).join(", ")}`);
+    console.log(`[seed] retired ${retired.length}: ${retired.map((r) => r.slug).join(", ")}`);
   }
 
   console.log(
-    `Done: ${STATES.length} states, ${allLgas.length} LGAs, ${CATALOG.length} products.`,
+    `[seed] ${STATES.length} states, ${allLgas.length} LGAs, ${CATALOG.length} products.`,
   );
   process.exit(0);
 }

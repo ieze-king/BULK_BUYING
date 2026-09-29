@@ -236,8 +236,14 @@ the SQL did not, and every visitor got a server error.
 
 ```bash
 npm run migrate      # apply pending migrations
-npm run build        # migrate, then build
+npm run db:seed      # states, LGAs, catalogue
+npm run build        # migrate, seed, then build
 ```
+
+Reference data seeds on every build too. It is idempotent, so it doubles as the way a
+catalogue change reaches production: edit `catalog.ts`, deploy, done. Removing an item
+retires it (`active = false`) rather than deleting it, because existing pools reference
+products.
 
 Each file in `migrations/` runs once, in filename order, inside a transaction. An
 advisory lock serialises concurrent builds. A checksum catches a file edited after it
