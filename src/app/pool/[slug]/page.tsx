@@ -56,7 +56,15 @@ export default async function PoolPage({
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "";
   const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  const shareUrl = `${proto}://${host}/pool/${slug}`;
+  // The key travels in the share link, which is what lets someone join an
+  // invite pool. The listing links here without it.
+  const shareUrl =
+    pool.join_policy === "invite"
+      ? `${proto}://${host}/pool/${slug}?k=${pool.join_token}`
+      : `${proto}://${host}/pool/${slug}`;
+
+  const hasKey = sp.k === pool.join_token;
+  const canJoin = pool.join_policy === "open" || hasKey || viewer.isMember;
   const justJoined = sp.joined === "1";
   const justCreated = sp.new === "1";
   const hue = categoryHue(pool.category);
@@ -183,7 +191,7 @@ export default async function PoolPage({
             </div>
           )}
 
-          {state !== "closed" && (
+          {state !== "closed" && (viewer.isMember || isCreator) && (
             <SharePool url={shareUrl} product={pool.product} place={pool.place} />
           )}
 
@@ -217,8 +225,27 @@ export default async function PoolPage({
                 </p>
               </section>
             </div>
+          ) : canJoin ? (
+            <JoinForm
+              slug={slug}
+              product={pool.product}
+              unitLabel={pool.unit_label}
+              joinKey={hasKey ? pool.join_token : undefined}
+            />
           ) : (
-            <JoinForm slug={slug} product={pool.product} unitLabel={pool.unit_label} />
+            <section className="pop mt-10 rounded-3xl bg-surface p-5 text-center sm:p-7">
+              <h2 className="font-display text-2xl font-black">Invite only</h2>
+              <p className="mt-2">
+                Whoever started this pool is keeping it to their own circle. You can
+                see how it is going, but you need their link to join.
+              </p>
+              <Link
+                href={`/start?product=${pool.product_id}`}
+                className="pop mt-5 inline-flex rounded-2xl bg-accent px-7 py-3.5 font-bold text-accent-contrast transition-transform hover:-translate-y-1"
+              >
+                Start your own {pool.product} pool
+              </Link>
+            </section>
           )}
 
           <Discussion slug={slug} comments={comments} isMember={viewer.isMember} />

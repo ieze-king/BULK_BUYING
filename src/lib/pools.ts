@@ -16,7 +16,8 @@ export type PoolSummary = {
   unit_label: string;
   category: string;
   place: string;
-  visibility: "private" | "public";
+  join_policy: "invite" | "open";
+  join_token: string;
   goal_quantity: number;
   goal_reached_at: string | null;
   closes_at: string | null;
@@ -50,7 +51,8 @@ export function poolState(pool: {
 const SUMMARY_SELECT = sql`
   SELECT pl.slug,
          pl.product_id,
-         pl.visibility,
+         pl.join_policy,
+         pl.join_token,
          pl.goal_quantity,
          pl.goal_reached_at,
          pl.closes_at,
@@ -77,13 +79,16 @@ const SUMMARY_SELECT = sql`
 `;
 
 /**
- * The bubble field. Public pools only: a private pool is link-only by
- * definition, and listing it would defeat the point of choosing private.
+ * The bubble field: every open pool, whoever may join it.
+ *
+ * Invite pools are listed too. Seeing that four groups in your area are buying
+ * rice is the point, even when you cannot join theirs, and an empty field made
+ * the whole page look dead.
  */
 export async function listPools(limit = 40) {
   const { rows } = await db.execute<PoolSummary>(sql`
     ${SUMMARY_SELECT}
-    WHERE pl.visibility = 'public' AND pl.closed_at IS NULL
+    WHERE pl.closed_at IS NULL
     GROUP BY pl.id, p.name, p.unit_label, p.category, place, pl.created_at
     HAVING COUNT(m.id) > 0
     ORDER BY total_quantity DESC, pl.created_at DESC
@@ -136,23 +141,24 @@ export async function findOrCreatePool(input: {
   areaLabel: string | null;
   startedBy: number | null;
   goalQuantity: number;
-  visibility: "private" | "public";
+  joinPolicy: "invite" | "open";
   spec: string | null;
 }) {
-  if (input.visibility === "private") {
+  // An invite pool is somebody's own circle, so it never merges with another.
+  if (input.joinPolicy === "invite") {
     const made = await db
       .insert(pools)
-      .values({ ...input, slug: makeSlug() })
-      .returning({ id: pools.id, slug: pools.slug });
+      .values({ ...input, slug: makeSlug(), joinToken: makeSlug() })
+      .returning({ id: pools.id, slug: pools.slug, joinToken: pools.joinToken });
     return { ...made[0], created: true };
   }
 
   const existing = await db
-    .select({ id: pools.id, slug: pools.slug })
+    .select({ id: pools.id, slug: pools.slug, joinToken: pools.joinToken })
     .from(pools)
     .where(
       and(
-        eq(pools.visibility, "public"),
+        eq(pools.joinPolicy, "open"),
         isNull(pools.closedAt),
         eq(pools.productId, input.productId),
         eq(pools.stateCode, input.stateCode),
@@ -168,19 +174,19 @@ export async function findOrCreatePool(input: {
 
   const inserted = await db
     .insert(pools)
-    .values({ ...input, slug: makeSlug() })
+    .values({ ...input, slug: makeSlug(), joinToken: makeSlug() })
     .onConflictDoNothing()
-    .returning({ id: pools.id, slug: pools.slug });
+    .returning({ id: pools.id, slug: pools.slug, joinToken: pools.joinToken });
 
   if (inserted[0]) return { ...inserted[0], created: true };
 
   // Lost a race to a concurrent creator; the other one is just as good.
   const raced = await db
-    .select({ id: pools.id, slug: pools.slug })
+    .select({ id: pools.id, slug: pools.slug, joinToken: pools.joinToken })
     .from(pools)
     .where(
       and(
-        eq(pools.visibility, "public"),
+        eq(pools.joinPolicy, "open"),
         eq(pools.productId, input.productId),
         eq(pools.stateCode, input.stateCode),
         input.lgaId === null ? isNull(pools.lgaId) : eq(pools.lgaId, input.lgaId),

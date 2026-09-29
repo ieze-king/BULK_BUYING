@@ -88,7 +88,7 @@ const startSchema = z.object({
     .int()
     .min(1, "Set a goal of at least 1")
     .max(100000),
-  visibility: z.enum(["private", "public"], { message: "Choose who can join" }),
+  joinPolicy: z.enum(["invite", "open"], { message: "Choose who can join" }),
   spec: z.preprocess((v) => (v === "" || v == null ? undefined : v),
     z.string().trim().max(120).optional()),
   ...placeSchema,
@@ -97,6 +97,9 @@ const startSchema = z.object({
 
 const joinSchema = z.object({
   slug: z.string().trim().min(1),
+  /** The key from the share link. Required to join an invite pool. */
+  key: z.preprocess((v) => (v === "" || v == null ? undefined : v),
+    z.string().trim().optional()),
   quantity: quantitySchema,
   ...contactSchema,
 });
@@ -150,7 +153,7 @@ export async function startPool(
     areaLabel: d.lgaId ? null : (d.area ?? null),
     startedBy: person.id,
     goalQuantity: d.goalQuantity,
-    visibility: d.visibility,
+    joinPolicy: d.joinPolicy,
     spec: d.spec ?? null,
   });
 
@@ -158,7 +161,10 @@ export async function startPool(
 
   revalidatePath("/");
   revalidatePath(`/pool/${pool.slug}`);
-  redirect(`/pool/${pool.slug}?joined=1${pool.created ? "&new=1" : ""}`);
+  // The creator lands with the key, so their share button carries it.
+  redirect(
+    `/pool/${pool.slug}?k=${pool.joinToken}&joined=1${pool.created ? "&new=1" : ""}`,
+  );
 }
 
 export async function joinExistingPool(
@@ -182,6 +188,18 @@ export async function joinExistingPool(
     return { formError: "This pool has closed. Its members are arranging the order." };
   }
 
+  // Listing a pool makes its URL public, so an invite pool checks the key from
+  // the share link. Someone already in the pool never needs it again.
+  if (found.join_policy === "invite") {
+    const already = await membershipOf(found.id, anonId);
+    if (!already && d.key !== found.join_token) {
+      return {
+        formError:
+          "This pool is invite only. Ask whoever started it to send you their link.",
+      };
+    }
+  }
+
   await joinPool(found.id, person.id, d.quantity, d.interested === "ready");
 
   revalidatePath("/");
@@ -198,8 +216,11 @@ async function loadPool(slug: string) {
     closed_at: string | null;
     goal_reached_at: string | null;
     closes_at: string | null;
+    join_policy: "invite" | "open";
+    join_token: string;
   }>(sql`
-    SELECT id, started_by, closed_at, goal_reached_at, closes_at
+    SELECT id, started_by, closed_at, goal_reached_at, closes_at,
+           join_policy, join_token
     FROM pools WHERE slug = ${slug}
   `);
   return rows[0] ?? null;

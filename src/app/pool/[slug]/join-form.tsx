@@ -10,10 +10,13 @@ export function JoinForm({
   slug,
   product,
   unitLabel,
+  joinKey,
 }: {
   slug: string;
   product: string;
   unitLabel: string;
+  /** Passed straight back so an invite pool can check it server side. */
+  joinKey?: string;
 }) {
   const [state, formAction, pending] = useActionState<PoolFormState, FormData>(
     joinExistingPool,
@@ -25,6 +28,7 @@ export function JoinForm({
   return (
     <form action={formAction} className="pop mt-10 rounded-3xl bg-surface p-5 sm:p-7">
       <input type="hidden" name="slug" value={slug} />
+      {joinKey && <input type="hidden" name="key" value={joinKey} />}
 
       <h2 className="font-display text-2xl font-black">Join this pool</h2>
       <p className="mt-1.5">

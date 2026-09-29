@@ -49,6 +49,11 @@ export function Bubble({
         <span className="mt-1 block text-xs font-semibold opacity-70">
           {peoplePhrase(pool.people_count)}
         </span>
+        {pool.join_policy === "invite" && (
+          <span className="mt-1 block text-[0.7rem] font-bold opacity-60">
+            invite only
+          </span>
+        )}
       </span>
     </Link>
   );

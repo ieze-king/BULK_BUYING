@@ -115,14 +115,20 @@ export const pools = pgTable(
     startedBy: integer("started_by").references(() => people.id),
 
     /**
-     * Private pools are link-only and never appear in the public field. This is
-     * the default: most group buying happens inside an existing circle, and the
-     * group fulfils the order itself, so a stranger joining is a real intrusion
-     * rather than a welcome addition.
+     * Who may join. Every pool is listed either way, so the field shows real
+     * activity instead of sitting empty, but an invite pool is the creator's
+     * own circle and a stranger joining it is an intrusion.
+     *
+     * Listing a pool makes its URL public, so obscurity cannot be the gate.
+     * The share link carries joinToken; the listing links to the page without
+     * it, which shows the pool but not the join form.
      */
-    visibility: text("visibility", { enum: ["private", "public"] })
+    joinPolicy: text("join_policy", { enum: ["invite", "open"] })
       .notNull()
-      .default("private"),
+      .default("invite"),
+    /** The key in the share link. Not a secret worth protecting, just one
+     *  that cannot be guessed from a bubble on the front page. */
+    joinToken: text("join_token").notNull(),
 
     /**
      * What the creator is aiming for. Their stated aim, never a claim about any
@@ -156,18 +162,18 @@ export const pools = pgTable(
   },
   (t) => [
     /*
-     * The anti-fragmentation guarantee, for public pools only: one pool per
-     * product per place, so demand always sums. Private pools are somebody's
+     * The anti-fragmentation guarantee, for open pools only: one pool per
+     * product per place, so demand always sums. Invite pools are somebody's
      * own circle and may legitimately duplicate a place, so they are excluded.
      *
      * Note Postgres treats NULLs as distinct in a unique index, so this does
-     * not catch two public pools that both have a null lga_id. findOrCreatePool
+     * not catch two open pools that both have a null lga_id. findOrCreatePool
      * selects before inserting and re-selects on conflict, which covers that in
      * practice; this index is the backstop, not the mechanism.
      */
-    uniqueIndex("pools_public_product_place_idx")
+    uniqueIndex("pools_open_product_place_idx")
       .on(t.productId, t.stateCode, t.lgaId, t.areaLabel)
-      .where(sql`${t.visibility} = 'public'`),
+      .where(sql`${t.joinPolicy} = 'open'`),
     index("pools_place_idx").on(t.stateCode, t.lgaId),
   ],
 );

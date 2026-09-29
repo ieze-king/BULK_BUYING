@@ -50,10 +50,20 @@ npm run dev
 A pool is a public, shareable group order. Someone starts one, others join with their
 own quantity, and the page shows how big it has grown.
 
-**A pool is canonically `(product, state, LGA or area)`.** Starting one that already
-exists joins it instead. That makes catalogue fragmentation impossible by construction:
-there can only ever be one rice-in-Ikeja pool, so it always sums. Joining twice updates
-your quantity rather than double counting.
+**Every pool is listed**, whoever may join it. Seeing that four groups near you are
+buying rice is the point, and a field that only showed open pools sat empty, because
+most pools are somebody's own circle.
+
+**Who may join is a separate choice.** An open pool merges with any other open pool for
+the same product and place, which is the anti-fragmentation guarantee: there can only
+ever be one open rice-in-Ikeja pool, so it always sums. An invite pool never merges,
+because it belongs to a particular group.
+
+Listing a pool makes its URL public, so obscurity cannot be the gate. Each pool carries
+a `join_token`; the share link includes it, the listing links without it. No token means
+the page renders without a join form and offers to start your own instead, and the
+server checks the token again on submit so a forged post fails too. Joining twice
+updates your quantity rather than double counting.
 
 **Pools carry no target.** We do not know any supplier's real minimum order, so a goal
 would be an invented number doing load-bearing work. The story is momentum instead:

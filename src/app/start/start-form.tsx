@@ -41,7 +41,7 @@ export function StartForm({
   const [category, setCategory] = useState<string | null>(null);
   const [quantity, setQuantity] = useState("");
   const [goal, setGoal] = useState("");
-  const [visibility, setVisibility] = useState("private");
+  const [joinPolicy, setJoinPolicy] = useState("invite");
   const [stateCode, setStateCode] = useState("");
   const [lgaId, setLgaId] = useState("");
   const [area, setArea] = useState("");
@@ -239,17 +239,21 @@ export function StartForm({
         <FieldError message={errors.goalQuantity} />
 
         <h3 className="mt-6 font-bold">Who can join?</h3>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        <p className="mt-1 text-sm text-muted">
+          Either way your pool is listed on the front page, so people can see the
+          demand building. This only controls who can add themselves to it.
+        </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
           {[
             {
-              v: "private",
-              l: "Only people I invite",
-              h: "Link only. Never listed publicly.",
+              v: "invite",
+              l: "Only people I send the link to",
+              h: "Your own circle. Others can see the pool but cannot join it.",
             },
             {
-              v: "public",
+              v: "open",
               l: "Anyone nearby",
-              h: "Listed so strangers can join and grow it faster.",
+              h: "Fills faster, and merges with any open pool for the same item and place.",
             },
           ].map((o) => (
             <label
@@ -258,10 +262,10 @@ export function StartForm({
             >
               <input
                 type="radio"
-                name="visibility"
+                name="joinPolicy"
                 value={o.v}
-                checked={visibility === o.v}
-                onChange={() => setVisibility(o.v)}
+                checked={joinPolicy === o.v}
+                onChange={() => setJoinPolicy(o.v)}
                 className="mt-1 size-4 shrink-0 accent-[var(--accent)]"
               />
               <span>
@@ -271,7 +275,7 @@ export function StartForm({
             </label>
           ))}
         </div>
-        <FieldError message={errors.visibility} />
+        <FieldError message={errors.joinPolicy} />
       </section>
 
       {/* 4. Where */}
