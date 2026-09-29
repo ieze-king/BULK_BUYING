@@ -1,5 +1,6 @@
 import { isAdmin } from "@/lib/admin";
 import { databaseLabel, deploymentLabel } from "@/lib/env-badge";
+import { unitPhrase } from "@/lib/format";
 import { LoginForm } from "./login-form";
 import {
   catalogueGaps,
@@ -115,7 +116,7 @@ export default async function AdminPage() {
           rows={table.map((r) => [
             r.product,
             r.place ?? "Unknown",
-            `${r.total_quantity} ${r.unit_label}s`,
+            unitPhrase(r.total_quantity, r.unit_label),
             r.people_count,
             r.ready_count,
             r.joined_this_week,

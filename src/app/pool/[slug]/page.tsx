@@ -150,7 +150,7 @@ export default async function PoolPage({
           <div className="mt-6">
             <div className="flex items-baseline justify-between text-sm font-bold">
               <span>
-                {pool.total_quantity} of {pool.goal_quantity} {pool.unit_label}s
+                {pool.total_quantity} of {unitPhrase(pool.goal_quantity, pool.unit_label)}
               </span>
               <span className="text-muted">{pct}%</span>
             </div>
@@ -185,7 +185,7 @@ export default async function PoolPage({
             >
               <p className="font-display text-xl font-black">This pool is closed</p>
               <p className="mt-1 opacity-90">
-                {pool.people_count} people, {pool.total_quantity} {pool.unit_label}s.
+                {peoplePhrase(pool.people_count)}, {unitPhrase(pool.total_quantity, pool.unit_label)}.
                 Members are arranging the order between themselves.
               </p>
             </div>

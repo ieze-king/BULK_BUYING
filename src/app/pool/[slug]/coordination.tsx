@@ -163,8 +163,8 @@ export function Coordinator({
           <p className="mt-2">
             The group chose <strong>{chosen.name ?? "a member"}</strong>.{" "}
             <span className="text-muted">
-              {agreed} of {members.length} {agreed === 1 ? "member has" : "members have"}{" "}
-              agreed.
+              {agreed} of {members.length}{" "}
+              {members.length === 1 ? "member" : "members"} agreed.
             </span>
           </p>
           {isMember && !hasConfirmed && (
