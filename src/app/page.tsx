@@ -9,21 +9,45 @@ import { peoplePhrase } from "@/lib/format";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [pools, totals] = await Promise.all([
-    listPools(40),
-    db.execute<{ people: number; pools: number }>(sql`
-      SELECT (SELECT COUNT(DISTINCT person_id) FROM pool_members)::int AS people,
-             (SELECT COUNT(*) FROM pools)::int AS pools
-    `),
-  ]);
-  const { people = 0, pools: poolCount = 0 } = totals.rows[0] ?? {};
+  /*
+   * The front page degrades rather than dies.
+   *
+   * This is the page strangers land on from a WhatsApp link, and a database
+   * problem here used to return a blank server error to every one of them.
+   * A page showing starter bubbles is wrong but usable; a 500 is neither, and
+   * the visitor has no idea whether to come back. Failures still reach the
+   * logs, and /admin keeps reporting the truth.
+   */
+  let pools: Awaited<ReturnType<typeof listPools>> = [];
+  let people = 0;
+  let poolCount = 0;
+
+  try {
+    const [rows, totals] = await Promise.all([
+      listPools(40),
+      db.execute<{ people: number; pools: number }>(sql`
+        SELECT (SELECT COUNT(DISTINCT person_id) FROM pool_members)::int AS people,
+               (SELECT COUNT(*) FROM pools)::int AS pools
+      `),
+    ]);
+    pools = rows;
+    people = totals.rows[0]?.people ?? 0;
+    poolCount = totals.rows[0]?.pools ?? 0;
+  } catch (error) {
+    console.error("Home: could not read pools, showing starters only", error);
+  }
 
   // Keep the field looking alive while it is still thin, with invitations
   // rather than invented demand.
-  const starters = await suggestedStarters(
-    pools.map((p) => p.product_id),
-    Math.max(0, 10 - pools.length),
-  );
+  let starters: Awaited<ReturnType<typeof suggestedStarters>> = [];
+  try {
+    starters = await suggestedStarters(
+      pools.map((p) => p.product_id),
+      Math.max(0, 10 - pools.length),
+    );
+  } catch (error) {
+    console.error("Home: could not read starter products", error);
+  }
   const hasPools = pools.length > 0;
 
   return (
