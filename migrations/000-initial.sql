@@ -7,6 +7,11 @@
 --
 -- Generated from schema.ts with drizzle-kit generate, then guarded by hand.
 --
+-- It deliberately omits anything a later migration introduces. The partial
+-- index on join_policy lives in 003, because a database that predates 003 has
+-- no such column yet and creating the index here would fail on exactly the
+-- databases this file exists to leave alone.
+--
 -- From here on, schema changes are migrations. drizzle-kit push stays for
 -- local development only; pushing to production is what let the code and the
 -- database drift apart twice.
@@ -159,7 +164,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS "pool_members_pool_person_idx" ON "pool_member
 
 CREATE INDEX IF NOT EXISTS "pool_members_joined_idx" ON "pool_members" USING btree ("joined_at");
 
-CREATE UNIQUE INDEX IF NOT EXISTS "pools_open_product_place_idx" ON "pools" USING btree ("product_id","state_code","lga_id","area_label") WHERE "pools"."join_policy" = 'open';
 
 CREATE INDEX IF NOT EXISTS "pools_place_idx" ON "pools" USING btree ("state_code","lga_id");
 
