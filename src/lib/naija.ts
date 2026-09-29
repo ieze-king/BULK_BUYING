@@ -7,6 +7,12 @@
  * package that runs once and never again is a supply-chain surface for no
  * benefit, and the boundaries have not moved since 1996.
  *
+ * Three names are corrected from the source: it writes "Eti Osa" for Eti-Osa,
+ * and disambiguates the two Surulere LGAs as "Surulere Lagos State" and
+ * "Surulere Oyo State", which reads badly in a dropdown already grouped by
+ * state. Both are simply "Surulere" here, which is safe because the unique
+ * index is on (state_code, name).
+ *
  * Source: https://gist.github.com/devhammed/0bb9eeac9ff22c895100d072f489dc98
  * Retrieved 2026-09-23. Verified against the official count of 774, and
  * spot-checked: Borno 27, Delta 25, Kano 44, Lagos 20.
@@ -85,13 +91,13 @@ export const LGAS_BY_STATE: Record<string, string[]> = {
   KO: ["Ajaokuta", "Adavi", "Ankpa", "Bassa", "Dekina", "Ibaji", "Idah", "Igalamela Odolu", "Ijumu", "Kogi", "Kabba/Bunu", "Lokoja", "Ofu", "Mopa Muro", "Ogori/Magongo", "Okehi", "Okene", "Olamaboro", "Omala", "Yagba East", "Yagba West"],
   KT: ["Bakori", "Batagarawa", "Batsari", "Baure", "Bindawa", "Charanchi", "Danja", "Dandume", "Dan Musa", "Daura", "Dutsi", "Dutsin Ma", "Faskari", "Funtua", "Ingawa", "Jibia", "Kafur", "Kaita", "Kankara", "Kankia", "Katsina", "Kurfi", "Kusada", "Mai'Adua", "Malumfashi", "Mani", "Mashi", "Matazu", "Musawa", "Rimi", "Sabuwa", "Safana", "Sandamu", "Zango"],
   KW: ["Asa", "Baruten", "Edu", "Ilorin East", "Ifelodun", "Ilorin South", "Ekiti Kwara State", "Ilorin West", "Irepodun", "Isin", "Kaiama", "Moro", "Offa", "Oke Ero", "Oyun", "Pategi"],
-  LA: ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Badagry", "Apapa", "Epe", "Eti Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Mushin", "Lagos Mainland", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere Lagos State"],
+  LA: ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Badagry", "Apapa", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Mushin", "Lagos Mainland", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"],
   NA: ["Akwanga", "Awe", "Doma", "Karu", "Keana", "Keffi", "Lafia", "Kokona", "Nasarawa Egon", "Nasarawa", "Obi", "Toto", "Wamba"],
   NI: ["Agaie", "Agwara", "Bida", "Borgu", "Bosso", "Chanchaga", "Edati", "Gbako", "Gurara", "Katcha", "Kontagora", "Lapai", "Lavun", "Mariga", "Magama", "Mokwa", "Mashegu", "Moya", "Paikoro", "Rafi", "Rijau", "Shiroro", "Suleja", "Tafa", "Wushishi"],
   OG: ["Abeokuta North", "Abeokuta South", "Ado-Odo/Ota", "Egbado North", "Ewekoro", "Egbado South", "Ijebu North", "Ijebu East", "Ifo", "Ijebu Ode", "Ijebu North East", "Imeko Afon", "Ikenne", "Ipokia", "Odeda", "Obafemi Owode", "Odogbolu", "Remo North", "Ogun Waterside", "Shagamu"],
   ON: ["Akoko North-East", "Akoko North-West", "Akoko South-West", "Akoko South-East", "Akure North", "Akure South", "Ese Odo", "Idanre", "Ifedore", "Ilaje", "Irele", "Ile Oluji/Okeigbo", "Odigbo", "Okitipupa", "Ondo West", "Ose", "Ondo East", "Owo"],
   OS: ["Aiyedire", "Atakunmosa West", "Atakunmosa East", "Aiyedaade", "Boluwaduro", "Boripe", "Ife East", "Ede South", "Ife North", "Ede North", "Ife South", "Ejigbo", "Ife Central", "Ifedayo", "Egbedore", "Ila", "Ifelodun", "Ilesa East", "Ilesa West", "Irepodun", "Irewole", "Isokan", "Iwo", "Obokun", "Odo Otin", "Ola Oluwa", "Olorunda", "Oriade", "Orolu", "Osogbo"],
-  OY: ["Afijio", "Akinyele", "Atiba", "Atisbo", "Egbeda", "Ibadan North", "Ibadan North-East", "Ibadan North-West", "Ibadan South-East", "Ibarapa Central", "Ibadan South-West", "Ibarapa East", "Ido", "Ibarapa North", "Irepo", "Iseyin", "Itesiwaju", "Iwajowa", "Kajola", "Lagelu", "Ogbomosho North", "Ogbomosho South", "Ogo Oluwa", "Olorunsogo", "Oluyole", "Ona Ara", "Orelope", "Ori Ire", "Oyo", "Oyo East", "Saki East", "Saki West", "Surulere Oyo State"],
+  OY: ["Afijio", "Akinyele", "Atiba", "Atisbo", "Egbeda", "Ibadan North", "Ibadan North-East", "Ibadan North-West", "Ibadan South-East", "Ibarapa Central", "Ibadan South-West", "Ibarapa East", "Ido", "Ibarapa North", "Irepo", "Iseyin", "Itesiwaju", "Iwajowa", "Kajola", "Lagelu", "Ogbomosho North", "Ogbomosho South", "Ogo Oluwa", "Olorunsogo", "Oluyole", "Ona Ara", "Orelope", "Ori Ire", "Oyo", "Oyo East", "Saki East", "Saki West", "Surulere"],
   PL: ["Bokkos", "Barkin Ladi", "Bassa", "Jos East", "Jos North", "Jos South", "Kanam", "Kanke", "Langtang South", "Langtang North", "Mangu", "Mikang", "Pankshin", "Qua'an Pan", "Riyom", "Shendam", "Wase"],
   RI: ["Abua/Odual", "Ahoada East", "Ahoada West", "Andoni", "Akuku-Toru", "Asari-Toru", "Bonny", "Degema", "Emuoha", "Eleme", "Ikwerre", "Etche", "Gokana", "Khana", "Obio/Akpor", "Ogba/Egbema/Ndoni", "Ogu/Bolo", "Okrika", "Omuma", "Opobo/Nkoro", "Oyigbo", "Port Harcourt", "Tai"],
   SO: ["Gudu", "Gwadabawa", "Illela", "Isa", "Kebbe", "Kware", "Rabah", "Sabon Birni", "Shagari", "Silame", "Sokoto North", "Sokoto South", "Tambuwal", "Tangaza", "Tureta", "Wamako", "Wurno", "Yabo", "Binji", "Bodinga", "Dange Shuni", "Goronyo", "Gada"],
