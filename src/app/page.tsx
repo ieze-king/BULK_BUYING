@@ -21,18 +21,22 @@ export default async function Home() {
   let pools: Awaited<ReturnType<typeof listPools>> = [];
   let people = 0;
   let poolCount = 0;
+  let privatePools = 0;
 
   try {
     const [rows, totals] = await Promise.all([
       listPools(40),
-      db.execute<{ people: number; pools: number }>(sql`
+      db.execute<{ people: number; pools: number; private_pools: number }>(sql`
         SELECT (SELECT COUNT(DISTINCT person_id) FROM pool_members)::int AS people,
-               (SELECT COUNT(*) FROM pools)::int AS pools
+               (SELECT COUNT(*) FROM pools)::int AS pools,
+               (SELECT COUNT(*) FROM pools WHERE visibility = 'private')::int
+                 AS private_pools
       `),
     ]);
     pools = rows;
     people = totals.rows[0]?.people ?? 0;
     poolCount = totals.rows[0]?.pools ?? 0;
+    privatePools = totals.rows[0]?.private_pools ?? 0;
   } catch (error) {
     console.error("Home: could not read pools, showing starters only", error);
   }
@@ -49,6 +53,9 @@ export default async function Home() {
     console.error("Home: could not read starter products", error);
   }
   const hasPools = pools.length > 0;
+  // Private pools are deliberately invisible here, so without saying so the
+  // counter above ("4 pools so far") reads as a contradiction of an empty field.
+  const onlyPrivate = !hasPools && privatePools > 0;
 
   return (
     <>
@@ -95,7 +102,7 @@ export default async function Home() {
                 className="pop w-full rounded-2xl px-8 py-4 text-lg font-bold transition-transform hover:-translate-y-1 sm:w-auto"
                 style={{ background: "var(--marigold)" }}
               >
-                Join a pool
+                {hasPools ? "Join a pool" : "See what people buy"}
               </a>
             </div>
 
@@ -103,6 +110,11 @@ export default async function Home() {
               <p className="rise mt-6 font-semibold" style={{ animationDelay: "240ms" }}>
                 {peoplePhrase(people)} across {poolCount} pool
                 {poolCount === 1 ? "" : "s"} so far.
+                {privatePools > 0 && (
+                  <span className="block font-normal text-muted">
+                    Most are private, so you won&rsquo;t see them here.
+                  </span>
+                )}
               </p>
             )}
           </div>
@@ -112,12 +124,18 @@ export default async function Home() {
           <div className="mx-auto max-w-6xl">
             <div className="mb-8 text-center">
               <h2 className="font-display text-3xl font-black sm:text-4xl">
-                {hasPools ? "Pools growing now" : "Nothing has started yet"}
+                {hasPools
+                  ? "Pools growing now"
+                  : onlyPrivate
+                    ? "No open pools right now"
+                    : "Nothing has started yet"}
               </h2>
               <p className="mx-auto mt-2 max-w-xl">
                 {hasPools
                   ? "Each bubble is a group order. The bigger it is, the more people have joined. Tap one to add what you want."
-                  : "Every bubble below is waiting for someone to start it. Pick what you buy, say how many, and send it to people who buy the same thing."}
+                  : onlyPrivate
+                    ? "Pools are private by default, so they only appear to the people they were shared with. You need a link from whoever started one, or you can start your own."
+                    : "Every bubble below is waiting for someone to start it. Pick what you buy, say how many, and send it to people who buy the same thing."}
               </p>
             </div>
 
